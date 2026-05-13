@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './auth'
 import type { UserRole } from '../types/database'
 
@@ -18,6 +18,7 @@ function roleToPath(role: UserRole): string {
 
 export function RequireAuth({ children, allowedRoles }: RequireAuthProps) {
   const { session, profile, loading } = useAuth()
+  const location = useLocation()
 
   if (loading) {
     return (
@@ -40,7 +41,9 @@ export function RequireAuth({ children, allowedRoles }: RequireAuthProps) {
   }
 
   if (allowedRoles && !allowedRoles.includes(profile.role)) {
-    return <Navigate to={roleToPath(profile.role)} replace />
+    const correctPath = roleToPath(profile.role)
+    // Pass a flag so the target page can show a toast
+    return <Navigate to={correctPath} replace state={{ accessDenied: location.pathname }} />
   }
 
   return <>{children}</>

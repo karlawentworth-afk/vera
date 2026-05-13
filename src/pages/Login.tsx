@@ -57,7 +57,7 @@ export function LoginPage() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin + '/admin',
+        emailRedirectTo: window.location.origin,
       },
     })
 
@@ -80,9 +80,11 @@ export function LoginPage() {
           </p>
         </div>
 
+        <h2 className="text-base font-medium text-gray-900 mb-6">Sign in to Vera</h2>
+
         {sent ? (
           <div className="bg-gray-50 rounded-lg p-6">
-            <h2 className="text-base font-medium text-gray-900 mb-2">Check your email</h2>
+            <h3 className="text-base font-medium text-gray-900 mb-2">Check your email</h3>
             <p className="text-sm text-gray-500">
               We've sent a magic link to <span className="font-medium text-gray-700">{email}</span>.
               Click it to sign in.
@@ -103,8 +105,9 @@ export function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="emma@ecls.co.uk"
+              placeholder="you@company.com"
               required
+              autoComplete="email"
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
             />
             <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2 mt-4">
@@ -115,6 +118,7 @@ export function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
             />
             {error && (
@@ -144,8 +148,9 @@ export function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="emma@ecls.co.uk"
+              placeholder="you@company.com"
               required
+              autoComplete="email"
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
             />
             {error && (
@@ -167,6 +172,10 @@ export function LoginPage() {
             </button>
           </form>
         )}
+
+        <p className="mt-8 text-xs text-gray-400 text-center">
+          Don't have an account? Contact your administrator.
+        </p>
       </div>
     </div>
   )

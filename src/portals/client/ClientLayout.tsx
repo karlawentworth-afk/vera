@@ -4,6 +4,7 @@ import { VeraLogo } from '../../components/shared/VeraLogo'
 import { PlaceholderPage } from '../../components/shared/PlaceholderPage'
 import { useAuth } from '../../lib/auth'
 import { ClientDashboard } from './Dashboard'
+import { ClientSubmit } from './Submit'
 import { ClientAudit } from './Audit'
 
 const NAV_ITEMS = [
@@ -59,9 +60,7 @@ export function ClientLayout() {
         <Routes>
           <Route index element={<ClientDashboard />} />
           <Route path="audit" element={<ClientAudit />} />
-          <Route path="submit" element={
-            <PlaceholderPage title="Submit work" icon="upload" items={['Upload AI-translated content for expert review', 'Select language pair, content type, and urgency', 'Track submission through to delivery']} />
-          } />
+          <Route path="submit" element={<ClientSubmit />} />
           <Route path="jobs" element={
             <PlaceholderPage title="My jobs" icon="file-text" items={['View all submitted jobs with status tracking', 'Filter by status, language, date', 'Click through to full job detail and audit record']} />
           } />
