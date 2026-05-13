@@ -1,11 +1,17 @@
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { inviteUser } from '../../lib/invite'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
+import { Drawer } from '../../components/shared/Drawer'
+import { LANGUAGES } from '../../lib/constants'
 import { Plus, Edit3 } from 'lucide-react'
 
 const COLORS = { green: '#0F8F4D', cyan: '#1FA1D6' }
 
 export function AdminReviewers() {
+  const queryClient = useQueryClient()
+  const [showInvite, setShowInvite] = useState(false)
   const { data: reviewers, isLoading } = useQuery({
     queryKey: ['admin-reviewers'],
     queryFn: async () => {
@@ -87,10 +93,11 @@ export function AdminReviewers() {
   const freeCount = reviewers?.filter(r => !activeJobCounts[r.id]).length ?? 0
 
   return (
+    <>
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">{reviewers?.length ?? 0} active freelance reviewers · {freeCount} free</p>
-        <button className="text-sm bg-gray-900 text-white rounded px-3 py-1.5 hover:bg-gray-800 flex items-center gap-2">
+        <button onClick={() => setShowInvite(true)} className="text-sm bg-gray-900 text-white rounded px-3 py-1.5 hover:bg-gray-800 flex items-center gap-2">
           <Plus className="w-3.5 h-3.5" /> Add reviewer
         </button>
       </div>
@@ -149,6 +156,97 @@ export function AdminReviewers() {
           </table>
         </div>
       </div>
+    </div>
+
+    <Drawer open={showInvite} onClose={() => setShowInvite(false)} title="Add reviewer">
+      <ReviewerInviteForm onSuccess={() => {
+        setShowInvite(false)
+        queryClient.invalidateQueries({ queryKey: ['admin-reviewers'] })
+      }} />
+    </Drawer>
+    </>
+  )
+}
+
+function ReviewerInviteForm({ onSuccess }: { onSuccess: () => void }) {
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [langs, setLangs] = useState<string[]>([])
+  const [langInput, setLangInput] = useState({ source: 'EN', target: 'DE' })
+  const [specialism, setSpecialism] = useState('')
+  const [rate, setRate] = useState('0.045')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubmit() {
+    setSubmitting(true)
+    setError('')
+    const result = await inviteUser({
+      email,
+      full_name: `${firstName} ${lastName}`.trim(),
+      role: 'reviewer',
+      languages: langs,
+      specialism: specialism || undefined,
+      rate_per_word: parseFloat(rate) || undefined,
+    })
+    setSubmitting(false)
+    if (result.success) {
+      alert(`${firstName} ${lastName} invited as reviewer. Welcome email sent to ${email}`)
+      onSuccess()
+    } else {
+      setError(result.error || 'Failed to invite')
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2">First name</label>
+          <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
+        </div>
+        <div>
+          <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2">Last name</label>
+          <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
+        </div>
+      </div>
+      <div>
+        <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2">Email</label>
+        <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="anna@example.com" className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
+      </div>
+      <div>
+        <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2">Language pairs</label>
+        <div className="flex flex-wrap gap-1 mb-2">
+          {langs.map((l, i) => (
+            <span key={i} className="text-xs bg-gray-100 text-gray-700 rounded px-2 py-1 flex items-center gap-1">
+              {l} <button onClick={() => setLangs(langs.filter((_, j) => j !== i))} className="text-gray-400 hover:text-gray-600">&times;</button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2 items-center">
+          <select value={langInput.source} onChange={e => setLangInput(p => ({ ...p, source: e.target.value }))} className="text-sm border border-gray-200 rounded px-2 py-1.5">
+            {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
+          </select>
+          <span className="text-gray-400">→</span>
+          <select value={langInput.target} onChange={e => setLangInput(p => ({ ...p, target: e.target.value }))} className="text-sm border border-gray-200 rounded px-2 py-1.5">
+            {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
+          </select>
+          <button onClick={() => { const pair = `${langInput.source} → ${langInput.target}`; if (!langs.includes(pair)) setLangs([...langs, pair]) }} className="text-xs bg-gray-100 rounded px-2 py-1.5 hover:bg-gray-200">Add</button>
+        </div>
+      </div>
+      <div>
+        <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2">Specialism</label>
+        <input type="text" value={specialism} onChange={e => setSpecialism(e.target.value)} placeholder="Technical, Compliance, Marketing" className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
+      </div>
+      <div>
+        <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2">Rate per word (£)</label>
+        <input type="number" step="0.001" value={rate} onChange={e => setRate(e.target.value)} className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400" />
+      </div>
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      <button onClick={handleSubmit} disabled={!firstName || !email || langs.length === 0 || submitting} className="w-full bg-gray-900 text-white rounded-lg py-2.5 text-sm font-medium hover:bg-gray-800 disabled:opacity-50">
+        {submitting ? 'Creating...' : 'Add reviewer & send invite'}
+      </button>
     </div>
   )
 }

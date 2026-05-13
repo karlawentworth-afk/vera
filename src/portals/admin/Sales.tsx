@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../lib/auth'
+import { inviteUser } from '../../lib/invite'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Drawer } from '../../components/shared/Drawer'
 import { MetricCard } from '../../components/shared/MetricCard'
@@ -11,7 +11,6 @@ const COLORS = { green: '#0F8F4D', cyan: '#1FA1D6', purple: '#8E2882', pink: '#E
 
 export function AdminSales() {
   const queryClient = useQueryClient()
-  const { profile } = useAuth()
   const [selectedSalespersonId, setSelectedSalespersonId] = useState<string | null>(null)
   const [showInvite, setShowInvite] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
@@ -58,38 +57,14 @@ export function AdminSales() {
 
   const inviteMutation = useMutation({
     mutationFn: async () => {
-      const { data: authData, error: authErr } = await supabase.auth.admin?.createUser?.({
-        email: inviteEmail,
-        email_confirm: true,
-        user_metadata: { full_name: inviteName },
-      }) ?? { data: null, error: { message: 'Admin API not available — create user in Supabase dashboard' } as Error }
-
-      // Fallback: try signUp if admin API not available
-      let userId: string
-      if (authErr || !authData) {
-        // Use service-side approach — for now just create profile assuming user exists
-        throw new Error('Create the auth user in Supabase dashboard first, then add their profile here.')
-      } else {
-        userId = (authData as { user: { id: string } }).user.id
-      }
-
-      const { error: profErr } = await supabase.from('profiles').insert({
-        id: userId,
+      const result = await inviteUser({
         email: inviteEmail,
         full_name: inviteName,
         role: 'salesperson',
-        default_finders_fee_pct: parseFloat(inviteDefaultFinders) || null,
-        default_recurring_pct: parseFloat(inviteDefaultRecurring) || null,
+        default_finders_fee_pct: parseFloat(inviteDefaultFinders) || undefined,
+        default_recurring_pct: parseFloat(inviteDefaultRecurring) || undefined,
       })
-      if (profErr) throw profErr
-
-      await supabase.from('audit_log').insert({
-        actor_id: profile!.id,
-        action: 'invited_salesperson',
-        entity_type: 'profile',
-        entity_id: userId,
-        details: { email: inviteEmail, name: inviteName },
-      })
+      if (!result.success) throw new Error(result.error)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-salespeople'] })
