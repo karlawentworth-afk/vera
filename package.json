@@ -11,7 +11,8 @@
     "seed": "tsx scripts/seed.ts",
     "backfill-health": "tsx scripts/backfill-health.ts",
     "seed-docs": "tsx scripts/seed-sample-docs.ts",
-    "seed-demo": "tsx scripts/seed-demo.ts"
+    "seed-demo": "tsx scripts/seed-demo.ts",
+    "seed-segments": "tsx scripts/seed-segments.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.2",
