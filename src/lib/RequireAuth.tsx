@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './auth'
+import { VeraLoader } from '../components/shared/VeraLoader'
 import type { UserRole } from '../types/database'
 
 interface RequireAuthProps {
@@ -23,7 +24,7 @@ export function RequireAuth({ children, allowedRoles }: RequireAuthProps) {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-pulse text-gray-400 text-sm">Loading...</div>
+        <VeraLoader size="lg" text="Loading..." />
       </div>
     )
   }
