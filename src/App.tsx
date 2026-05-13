@@ -26,6 +26,7 @@ import { AdminInvoices } from './portals/admin/Invoices'
 import { AdminSettings } from './portals/admin/Settings'
 import { AdminAuditLog } from './portals/admin/AuditLog'
 import { AdminCron } from './portals/admin/Cron'
+import { AdminSystemReset } from './portals/admin/SystemReset'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,6 +62,7 @@ export default function App() {
               <Route path="settings" element={<AdminSettings />} />
               <Route path="audit-log" element={<AdminAuditLog />} />
               <Route path="cron" element={<AdminCron />} />
+              <Route path="system-reset" element={<AdminSystemReset />} />
             </Route>
 
             {/* Client portal */}
