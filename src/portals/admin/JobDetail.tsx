@@ -314,10 +314,18 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
         </div>
       )}
 
-      {/* Source / translated files placeholder */}
-      <div className="border border-dashed border-gray-200 rounded-lg p-4 text-center">
-        <FileText className="w-5 h-5 text-gray-300 mx-auto mb-1" />
-        <p className="text-xs text-gray-400">Source and translated files will appear here</p>
+      {/* File downloads */}
+      <div className="flex gap-2">
+        <button onClick={() => { import('../../lib/storage').then(m => m.downloadJobFile(job.organisation_id, jobId, 'source')) }}
+          className="flex-1 border border-gray-200 rounded-lg p-3 text-center hover:bg-gray-50 text-sm text-gray-600">
+          <FileText className="w-4 h-4 mx-auto mb-1 text-gray-400" /> Download source
+        </button>
+        {job.status === 'delivered' && (
+          <button onClick={() => { import('../../lib/storage').then(m => m.downloadJobFile(job.organisation_id, jobId, 'delivered')) }}
+            className="flex-1 border border-gray-200 rounded-lg p-3 text-center hover:bg-gray-50 text-sm font-medium text-gray-900">
+            <FileText className="w-4 h-4 mx-auto mb-1 text-green-600" /> Download verified
+          </button>
+        )}
       </div>
 
       {/* Reviewer section */}

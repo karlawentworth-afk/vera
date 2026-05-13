@@ -19,7 +19,8 @@
       "Bash(pkill -f \"vite\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/login)",
       "Bash(curl *)",
-      "Bash(ls *)"
+      "Bash(ls *)",
+      "Bash(npx tsx *)"
     ]
   }
 }
