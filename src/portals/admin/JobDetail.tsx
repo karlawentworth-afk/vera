@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { sendEmail } from '../../lib/email'
 import { useAuth } from '../../lib/auth'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -100,6 +101,20 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
         entity_id: jobId,
         details: { reviewer_id: reviewerId },
       })
+
+      // Email reviewer
+      const reviewer = reviewers?.find(r => r.id === reviewerId)
+      if (reviewer?.email) {
+        sendEmail({
+          to: reviewer.email,
+          template: 'job_allocated_reviewer',
+          data: {
+            job_number: job?.job_number, client_name: (job?.organisation as { name: string })?.name,
+            source_lang: job?.source_language, target_lang: job?.target_language,
+            word_count: job?.word_count, due_date: job?.due_at ? new Date(job.due_at).toLocaleDateString('en-GB') : '',
+          },
+        })
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] })
@@ -129,6 +144,16 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
         entity_id: jobId,
         details: { notes: signoffNotes || null },
       })
+
+      // Email client contact — find a client user for this org
+      const { data: clientUser } = await supabase.from('profiles').select('email, full_name').eq('organisation_id', job!.organisation_id).eq('role', 'client').limit(1).single()
+      if (clientUser?.email) {
+        sendEmail({
+          to: clientUser.email,
+          template: 'job_delivered_client',
+          data: { job_number: job!.job_number, hter_score: score?.hter_score ?? '—', health_score: '—' },
+        })
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] })
@@ -179,6 +204,15 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
         entity_id: jobId,
         details: { iteration: iterationNumber, feedback: returnFeedback },
       })
+
+      // Email reviewer
+      if (reviewer?.email) {
+        sendEmail({
+          to: reviewer.email,
+          template: 'job_returned_reviewer',
+          data: { job_number: job!.job_number, feedback: returnFeedback },
+        })
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] })

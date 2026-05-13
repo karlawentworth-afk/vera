@@ -8,6 +8,7 @@ import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Upload, X } from 'lucide-react'
 
 import { AI_TOOLS, LANGUAGES, CONTENT_TYPES } from '../../lib/constants'
+import { sendEmail } from '../../lib/email'
 
 const COLORS = { purple: '#8E2882', orange: '#EE7C24' }
 const ACCEPTED_TYPES = ['.docx', '.xliff', '.txt', '.csv', '.pdf']
@@ -152,6 +153,15 @@ export function ClientSubmit() {
         entity_id: job.id,
         details: { word_count: wc, urgency, content_type: contentType, overflow: wouldExceed },
       })
+
+      // Confirmation email to submitter
+      if (profile?.email) {
+        sendEmail({
+          to: profile.email,
+          template: 'job_submitted_client',
+          data: { job_number: 'V-' + job.id.substring(0, 4), content_type: contentType, source_lang: sourceLang, target_lang: targetLang, word_count: wc, urgency },
+        })
+      }
 
       return job.id
     },
