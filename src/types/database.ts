@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'client' | 'reviewer'
+export type UserRole = 'admin' | 'client' | 'reviewer' | 'salesperson'
 
 export type JobStatus = 'unallocated' | 'allocated' | 'in_review' | 'awaiting_signoff' | 'delivered' | 'cancelled'
 

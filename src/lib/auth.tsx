@@ -12,6 +12,8 @@ interface Profile {
   languages: string[] | null
   specialism: string | null
   rate_per_word: number | null
+  default_finders_fee_pct: number | null
+  default_recurring_pct: number | null
 }
 
 interface AuthContextType {
@@ -61,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function fetchProfile(userId: string) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, full_name, role, organisation_id, languages, specialism, rate_per_word')
+      .select('id, email, full_name, role, organisation_id, languages, specialism, rate_per_word, default_finders_fee_pct, default_recurring_pct')
       .eq('id', userId)
       .single()
 

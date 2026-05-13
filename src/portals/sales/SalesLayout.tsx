@@ -1,21 +1,17 @@
-import { NavLink, Outlet } from 'react-router-dom'
-import { Bell } from 'lucide-react'
+import { NavLink, Routes, Route } from 'react-router-dom'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { VeraLogo } from '../../components/shared/VeraLogo'
+import { PlaceholderPage } from '../../components/shared/PlaceholderPage'
 import { useAuth } from '../../lib/auth'
+import { SalesDashboard } from './Dashboard'
 
 const NAV_ITEMS = [
-  { to: '/admin', label: 'Dashboard', end: true },
-  { to: '/admin/jobs', label: 'Jobs' },
-  { to: '/admin/clients', label: 'Clients' },
-  { to: '/admin/reviewers', label: 'Reviewers' },
-  { to: '/admin/sales', label: 'Sales & commissions' },
-  { to: '/admin/quotes', label: 'Quotes' },
-  { to: '/admin/invoices', label: 'Invoices & Pay' },
-  { to: '/admin/settings', label: 'Tiers & pricing' },
+  { to: '/sales', label: 'Dashboard', end: true },
+  { to: '/sales/clients', label: 'My clients' },
+  { to: '/sales/earnings', label: 'Earnings' },
 ]
 
-export function AdminLayout() {
+export function SalesLayout() {
   const { profile, signOut } = useAuth()
   const initials = profile?.full_name
     ?.split(' ')
@@ -30,8 +26,8 @@ export function AdminLayout() {
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <VeraLogo size="sm" />
-            <span className="text-xs px-2 py-0.5 rounded bg-gray-900 text-white">Admin</span>
-            <nav className="flex gap-1 flex-wrap">
+            <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#8E288220', color: '#8E2882' }}>Sales</span>
+            <nav className="flex gap-1">
               {NAV_ITEMS.map(item => (
                 <NavLink
                   key={item.to}
@@ -47,10 +43,7 @@ export function AdminLayout() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/client" className="text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1">View as client</a>
-            <a href="/reviewer" className="text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1">View as reviewer</a>
-            <Bell className="w-4 h-4 text-gray-400" />
-            <div className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-medium">
+            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
               {initials}
             </div>
             <button onClick={signOut} className="text-xs text-gray-400 hover:text-gray-700">
@@ -62,12 +55,19 @@ export function AdminLayout() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-6">
-          <p className="text-xs uppercase tracking-widest text-gray-400 font-medium">Admin</p>
-          <h1 className="text-2xl font-light text-gray-900 mt-1">
-            Good morning, {profile?.full_name?.split(' ')[0] ?? 'Admin'}
-          </h1>
+          <p className="text-xs uppercase tracking-widest text-gray-400 font-medium">Sales portal</p>
+          <h1 className="text-2xl font-light text-gray-900 mt-1">{profile?.full_name ?? 'Sales'}</h1>
         </div>
-        <Outlet />
+
+        <Routes>
+          <Route index element={<SalesDashboard />} />
+          <Route path="clients" element={
+            <PlaceholderPage title="My Clients" icon="clipboard" items={['Organisations you introduced and their MRR', 'Commission earned per client', 'Agreement status and expiry dates']} />
+          } />
+          <Route path="earnings" element={
+            <PlaceholderPage title="Earnings" icon="credit-card" items={['Payout history with references', 'Upcoming payout estimate', 'Monthly statements']} />
+          } />
+        </Routes>
       </div>
     </div>
   )

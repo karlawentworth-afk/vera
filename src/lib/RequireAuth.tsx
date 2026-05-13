@@ -12,6 +12,7 @@ function roleToPath(role: UserRole): string {
     case 'admin': return '/admin'
     case 'client': return '/client'
     case 'reviewer': return '/reviewer'
+    case 'salesperson': return '/sales'
   }
 }
 

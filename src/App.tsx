@@ -8,12 +8,14 @@ import { LoginPage } from './pages/Login'
 import { AdminLayout } from './portals/admin/AdminLayout'
 import { ClientLayout } from './portals/client/ClientLayout'
 import { ReviewerLayout } from './portals/reviewer/ReviewerLayout'
+import { SalesLayout } from './portals/sales/SalesLayout'
 
 // Admin pages
 import { AdminDashboard } from './portals/admin/Dashboard'
 import { AdminJobs } from './portals/admin/Jobs'
 import { AdminClients } from './portals/admin/Clients'
 import { AdminReviewers } from './portals/admin/Reviewers'
+import { AdminSales } from './portals/admin/Sales'
 import { AdminSettings } from './portals/admin/Settings'
 import { PlaceholderPage } from './components/shared/PlaceholderPage'
 
@@ -40,6 +42,7 @@ export default function App() {
               <Route path="jobs" element={<AdminJobs />} />
               <Route path="clients" element={<AdminClients />} />
               <Route path="reviewers" element={<AdminReviewers />} />
+              <Route path="sales" element={<AdminSales />} />
               <Route path="quotes" element={
                 <PlaceholderPage
                   title="Quotes"
@@ -68,6 +71,13 @@ export default function App() {
             <Route path="/reviewer/*" element={
               <RequireAuth allowedRoles={['reviewer', 'admin']}>
                 <ReviewerLayout />
+              </RequireAuth>
+            } />
+
+            {/* Salesperson portal */}
+            <Route path="/sales/*" element={
+              <RequireAuth allowedRoles={['salesperson', 'admin']}>
+                <SalesLayout />
               </RequireAuth>
             } />
 
