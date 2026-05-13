@@ -1,13 +1,14 @@
 import { Routes, Route } from 'react-router-dom'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { PortalNav } from '../../components/shared/PortalNav'
-import { PlaceholderPage } from '../../components/shared/PlaceholderPage'
 import { useAuth } from '../../lib/auth'
 import { ClientDashboard } from './Dashboard'
 import { ClientSubmit } from './Submit'
+import { ClientJobs } from './Jobs'
 import { ClientAudit } from './Audit'
 import { ClientAuditLog } from './AuditLog'
 import { ClientGlossary } from './Glossary'
+import { ClientSubscription } from './Subscription'
 import { OnboardingOverlay } from '../../components/shared/OnboardingOverlay'
 
 const NAV_ITEMS = [
@@ -48,16 +49,12 @@ export function ClientLayout() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <Routes>
           <Route index element={<ClientDashboard />} />
+          <Route path="submit" element={<ClientSubmit />} />
+          <Route path="jobs" element={<ClientJobs />} />
           <Route path="audit" element={<ClientAudit />} />
           <Route path="audit-log" element={<ClientAuditLog />} />
           <Route path="glossary" element={<ClientGlossary />} />
-          <Route path="submit" element={<ClientSubmit />} />
-          <Route path="jobs" element={
-            <PlaceholderPage title="My jobs" icon="file-text" items={['View all submitted jobs with status tracking', 'Filter by status, language, date', 'Click through to full job detail and audit record']} />
-          } />
-          <Route path="subscription" element={
-            <PlaceholderPage title="Subscription" icon="credit-card" items={['View current tier and word usage', 'Compare available plans', 'Manage payment method and view invoices']} />
-          } />
+          <Route path="subscription" element={<ClientSubscription />} />
           <Route path="*" element={<ClientDashboard />} />
         </Routes>
       </div>

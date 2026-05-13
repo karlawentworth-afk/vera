@@ -1,9 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { PortalNav } from '../../components/shared/PortalNav'
-import { PlaceholderPage } from '../../components/shared/PlaceholderPage'
 import { useAuth } from '../../lib/auth'
 import { SalesDashboard } from './Dashboard'
+import { SalesClients } from './Clients'
+import { SalesEarnings } from './Earnings'
 
 const NAV_ITEMS = [
   { to: '/sales', label: 'Dashboard', end: true },
@@ -45,12 +46,8 @@ export function SalesLayout() {
 
         <Routes>
           <Route index element={<SalesDashboard />} />
-          <Route path="clients" element={
-            <PlaceholderPage title="My Clients" icon="clipboard" items={['Organisations you introduced and their MRR', 'Commission earned per client', 'Agreement status and expiry dates']} />
-          } />
-          <Route path="earnings" element={
-            <PlaceholderPage title="Earnings" icon="credit-card" items={['Payout history with references', 'Upcoming payout estimate', 'Monthly statements']} />
-          } />
+          <Route path="clients" element={<SalesClients />} />
+          <Route path="earnings" element={<SalesEarnings />} />
         </Routes>
       </div>
     </div>
