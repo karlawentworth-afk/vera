@@ -7,12 +7,14 @@ import { ClientDashboard } from './Dashboard'
 import { ClientSubmit } from './Submit'
 import { ClientAudit } from './Audit'
 import { ClientAuditLog } from './AuditLog'
+import { ClientGlossary } from './Glossary'
 
 const NAV_ITEMS = [
   { to: '/client', label: 'Dashboard', end: true },
   { to: '/client/submit', label: 'Submit work' },
   { to: '/client/jobs', label: 'My jobs' },
   { to: '/client/audit', label: 'AI health' },
+  { to: '/client/glossary', label: 'Glossary' },
   { to: '/client/subscription', label: 'Subscription' },
 ]
 
@@ -46,6 +48,7 @@ export function ClientLayout() {
           <Route index element={<ClientDashboard />} />
           <Route path="audit" element={<ClientAudit />} />
           <Route path="audit-log" element={<ClientAuditLog />} />
+          <Route path="glossary" element={<ClientGlossary />} />
           <Route path="submit" element={<ClientSubmit />} />
           <Route path="jobs" element={
             <PlaceholderPage title="My jobs" icon="file-text" items={['View all submitted jobs with status tracking', 'Filter by status, language, date', 'Click through to full job detail and audit record']} />

@@ -8,7 +8,7 @@ const supabase = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+const anthropic = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY! })
 
 export default async (req: Request, _context: Context) => {
   if (req.method !== "POST") {
