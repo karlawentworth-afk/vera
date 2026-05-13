@@ -84,10 +84,10 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard label="MRR" value={`£${(mrr / 100).toLocaleString()}`} trend={`${subscriptions?.length ?? 0} active subscriptions`} color={COLORS.green} />
-        <MetricCard label="Active clients" value={String(subscriptions?.length ?? 0)} trend={`${nearAllowance.length} near allowance`} color={COLORS.cyan} />
-        <MetricCard label="Jobs in flight" value={String(activeJobs.length)} trend={`${expedited.length} expedited, ${unallocated.length} unallocated`} color={COLORS.purple} />
-        <MetricCard label="Reviewers" value={String(reviewers?.length ?? 0)} trend={`${reviewers?.filter(r => !reviewerJobCounts[r.id]).length ?? 0} free`} color={COLORS.pink} />
+        <MetricCard label="MRR" value={`£${(mrr / 100).toLocaleString()}`} trend={`${subscriptions?.length ?? 0} active subscriptions`} color={COLORS.green} href="/admin/invoices" />
+        <MetricCard label="Active clients" value={String(subscriptions?.length ?? 0)} trend={`${nearAllowance.length} near allowance`} color={COLORS.cyan} href="/admin/clients" />
+        <MetricCard label="Jobs in flight" value={String(activeJobs.length)} trend={`${expedited.length} expedited, ${unallocated.length} unallocated`} color={COLORS.purple} href="/admin/jobs" />
+        <MetricCard label="Reviewers" value={String(reviewers?.length ?? 0)} trend={`${reviewers?.filter(r => !reviewerJobCounts[r.id]).length ?? 0} free`} color={COLORS.pink} href="/admin/reviewers" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

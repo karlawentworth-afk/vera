@@ -67,10 +67,10 @@ export function ReviewerQueue() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard label="Active jobs" value={String(activeCount)} trend={`${totalActiveWords.toLocaleString()} words`} color={COLORS.cyan} />
-        <MetricCard label="Words this month" value={(totalActiveWords + completedWords).toLocaleString()} trend={`£${estimatedEarnings.toLocaleString()} est.`} color={COLORS.green} />
-        <MetricCard label="Rate" value={`£${rate.toFixed(3)}`} unit="/word" color={COLORS.purple} />
-        <MetricCard label="Completed" value={String(completedJobs?.length ?? 0)} trend={`${completedWords.toLocaleString()} words`} color={COLORS.pink} />
+        <MetricCard label="Active jobs" value={String(activeCount)} trend={`${totalActiveWords.toLocaleString()} words`} color={COLORS.cyan} href="/reviewer" />
+        <MetricCard label="Words this month" value={(totalActiveWords + completedWords).toLocaleString()} trend={`£${estimatedEarnings.toLocaleString()} est.`} color={COLORS.green} href="/reviewer/earnings" />
+        <MetricCard label="Rate" value={`£${rate.toFixed(3)}`} unit="/word" color={COLORS.purple} href="/reviewer/settings" />
+        <MetricCard label="Completed" value={String(completedJobs?.length ?? 0)} trend={`${completedWords.toLocaleString()} words`} color={COLORS.pink} href="/reviewer/completed" />
       </div>
 
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">

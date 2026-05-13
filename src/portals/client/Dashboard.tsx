@@ -214,6 +214,7 @@ export function ClientDashboard() {
             ? `${healthScore >= prevScore ? '↑' : '↓'} ${Math.abs(healthScore - prevScore)} vs prior period`
             : healthScore !== null ? `Based on ${hterValues.length} reviews` : 'No reviews yet'}
           color={COLORS.green}
+          href="/client/audit"
         />
         <MetricCard
           label="Words this month"
@@ -221,18 +222,21 @@ export function ClientDashboard() {
           unit={allowance ? `/ ${allowance.toLocaleString()}` : '(unlimited)'}
           trend={allowance ? `${Math.round((wordsUsed / allowance) * 100)}% used` : subscription.tier_name}
           color={COLORS.cyan}
+          href="/client/subscription"
         />
         <MetricCard
           label="Active jobs"
           value={String(activeJobs?.length ?? 0)}
           trend={activeJobs?.length ? `${activeJobs.filter(j => j.status === 'in_review').length} in review` : 'None right now'}
           color={COLORS.purple}
+          href="/client/jobs"
         />
         <MetricCard
           label="Avg. turnaround"
           value={avgTurnaround !== null ? `${avgTurnaround}h` : '—'}
           trend="SLA: 24h standard"
           color={COLORS.pink}
+          href="/client/audit"
         />
       </div>
 
