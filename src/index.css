@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-vera-pink: #E5187A;
+  --color-vera-purple: #8E2882;
+  --color-vera-blue: #1B4F9E;
+  --color-vera-cyan: #1FA1D6;
+  --color-vera-green: #0F8F4D;
+  --color-vera-yellow: #F4D31E;
+  --color-vera-orange: #EE7C24;
+  --color-vera-red: #D9211E;
+
+  --font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create *)",
+      "Bash(cp -r /tmp/vera-scaffold/* /c/Users/karla/OneDrive/Desktop/CleverMX/ecls/vera/)",
+      "Bash(cp /tmp/vera-scaffold/.gitignore /c/Users/karla/OneDrive/Desktop/CleverMX/ecls/vera/)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git add *)"
+    ]
+  }
+}
