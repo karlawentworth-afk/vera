@@ -85,17 +85,7 @@ export function ClientDashboard() {
     enabled: !!orgId,
   })
 
-  if (!org || !subscription) {
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white border border-gray-200 rounded-lg animate-pulse" />)}
-        </div>
-      </div>
-    )
-  }
-
-  // Health snapshots — read from pre-calculated table
+  // Health snapshots — read from pre-calculated table (must be before early return)
   const { data: snapshots } = useQuery({
     queryKey: ['health-snapshots', orgId],
     queryFn: async () => {
@@ -110,6 +100,34 @@ export function ClientDashboard() {
     },
     enabled: !!orgId,
   })
+
+  // Recommendations — must be before early return
+  const { data: liveRecs } = useQuery({
+    queryKey: ['client-recommendations', orgId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('recommendations')
+        .select('*')
+        .eq('organisation_id', orgId!)
+        .is('dismissed_at', null)
+        .order('generated_at', { ascending: false })
+        .limit(5)
+      if (error) throw error
+      return data
+    },
+    enabled: !!orgId,
+  })
+
+  // Loading state — all hooks are above this point
+  if (!org || !subscription) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white border border-gray-200 rounded-lg animate-pulse" />)}
+        </div>
+      </div>
+    )
+  }
 
   const latestSnapshot = snapshots?.[0]
 
@@ -151,29 +169,11 @@ export function ClientDashboard() {
         })
       })()
 
-  // Recommendations from org record
-  // Recommendations — prefer live AI-generated from table, fallback to hand-curated on org
-  const { data: liveRecs } = useQuery({
-    queryKey: ['client-recommendations', orgId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('recommendations')
-        .select('*')
-        .eq('organisation_id', orgId!)
-        .is('dismissed_at', null)
-        .order('generated_at', { ascending: false })
-        .limit(5)
-      if (error) throw error
-      return data
-    },
-    enabled: !!orgId,
-  })
-
   const SEVERITY_COLORS: Record<string, string> = { positive: '#0F8F4D', neutral: '#1FA1D6', attention: '#EE7C24' }
 
   const recommendations = liveRecs && liveRecs.length > 0
     ? liveRecs.map(r => ({ color: SEVERITY_COLORS[r.severity] ?? '#1FA1D6', title: r.title, detail: r.body, id: r.id }))
-    : ((org.recommendations as { color: string; title: string; detail: string }[]) ?? []).map((r, i) => ({ ...r, id: `fallback-${i}` }))
+    : ((org?.recommendations as { color: string; title: string; detail: string }[]) ?? []).map((r, i) => ({ ...r, id: `fallback-${i}` }))
 
   // Empty state — no jobs yet
   const hasJobs = (jobs?.length ?? 0) > 0
