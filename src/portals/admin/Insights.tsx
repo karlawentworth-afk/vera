@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../lib/auth'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { RAINBOW } from '../../lib/constants'
+import { Zap } from 'lucide-react'
 
 const TOOL_COLORS: Record<string, string> = {
   'ChatGPT': RAINBOW.green,
@@ -27,8 +29,11 @@ interface JobWithScore {
 }
 
 export function AdminInsights() {
+  const { session } = useAuth()
   const [langFilter, setLangFilter] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
+  const [generatingFor, setGeneratingFor] = useState<string | null>(null)
+  const [genResult, setGenResult] = useState<string | null>(null)
 
   // Fetch all delivered jobs with their scores
   const { data: jobs, isLoading } = useQuery({
@@ -244,6 +249,91 @@ export function AdminInsights() {
               </tbody>
             </table>
           )}
+        </div>
+      </div>
+
+      {/* AI Recommendations generation */}
+      <GenerateRecommendations session={session} generatingFor={generatingFor} setGeneratingFor={setGeneratingFor} genResult={genResult} setGenResult={setGenResult} />
+    </div>
+  )
+}
+
+// Sub-component for generating recommendations
+function GenerateRecommendations({ session, generatingFor, setGeneratingFor, genResult, setGenResult }: {
+  session: { access_token: string } | null
+  generatingFor: string | null
+  setGeneratingFor: (v: string | null) => void
+  genResult: string | null
+  setGenResult: (v: string | null) => void
+}) {
+  const { data: clientOrgs } = useQuery({
+    queryKey: ['client-orgs-for-recs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('organisations')
+        .select('id, name')
+        .eq('type', 'client')
+        .order('name')
+      if (error) throw error
+      return data
+    },
+  })
+
+  async function generate(orgId: string) {
+    setGeneratingFor(orgId)
+    setGenResult(null)
+    try {
+      const resp = await fetch('/.netlify/functions/generate-recommendations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ organisation_id: orgId }),
+      })
+      const data = await resp.json()
+      if (!resp.ok) {
+        setGenResult(`Error: ${data.error}`)
+      } else {
+        setGenResult(`Generated ${data.count} recommendations`)
+      }
+    } catch (err) {
+      setGenResult(`Failed: ${err}`)
+    } finally {
+      setGeneratingFor(null)
+    }
+  }
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <RainbowStripe height={3} />
+      <div className="p-6">
+        <div className="flex items-center gap-2 mb-1">
+          <Zap className="w-4 h-4" style={{ color: RAINBOW.purple }} />
+          <h3 className="font-medium text-gray-900">AI-generated recommendations</h3>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">Generate personalised recommendations for each client using Claude AI. Analyses their hTER scores, AI tool usage, and reviewer feedback.</p>
+
+        {genResult && (
+          <div className={`text-sm mb-4 px-3 py-2 rounded ${genResult.startsWith('Error') || genResult.startsWith('Failed') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+            {genResult}
+          </div>
+        )}
+
+        <div className="space-y-2">
+          {clientOrgs?.map(org => (
+            <div key={org.id} className="flex items-center justify-between p-3 border border-gray-100 rounded">
+              <span className="text-sm font-medium text-gray-900">{org.name}</span>
+              <button
+                onClick={() => generate(org.id)}
+                disabled={!!generatingFor}
+                className="text-xs bg-gray-900 text-white rounded px-3 py-1.5 hover:bg-gray-800 disabled:opacity-50 flex items-center gap-1"
+              >
+                <Zap className="w-3 h-3" />
+                {generatingFor === org.id ? 'Generating...' : 'Generate'}
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </div>

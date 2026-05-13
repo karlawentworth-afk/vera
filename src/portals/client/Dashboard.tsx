@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { useClientOrgId } from '../../lib/useClientOrg'
 import { MetricCard } from '../../components/shared/MetricCard'
@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom'
 const COLORS = { green: '#0F8F4D', cyan: '#1FA1D6', purple: '#8E2882', pink: '#E5187A' }
 
 export function ClientDashboard() {
+  const queryClient = useQueryClient()
   const orgId = useClientOrgId()
 
   const { data: org } = useQuery({
@@ -132,7 +133,28 @@ export function ClientDashboard() {
   })()
 
   // Recommendations from org record
-  const recommendations = (org.recommendations as { color: string; title: string; detail: string }[]) ?? []
+  // Recommendations — prefer live AI-generated from table, fallback to hand-curated on org
+  const { data: liveRecs } = useQuery({
+    queryKey: ['client-recommendations', orgId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('recommendations')
+        .select('*')
+        .eq('organisation_id', orgId!)
+        .is('dismissed_at', null)
+        .order('generated_at', { ascending: false })
+        .limit(5)
+      if (error) throw error
+      return data
+    },
+    enabled: !!orgId,
+  })
+
+  const SEVERITY_COLORS: Record<string, string> = { positive: '#0F8F4D', neutral: '#1FA1D6', attention: '#EE7C24' }
+
+  const recommendations = liveRecs && liveRecs.length > 0
+    ? liveRecs.map(r => ({ color: SEVERITY_COLORS[r.severity] ?? '#1FA1D6', title: r.title, detail: r.body, id: r.id }))
+    : ((org.recommendations as { color: string; title: string; detail: string }[]) ?? []).map((r, i) => ({ ...r, id: `fallback-${i}` }))
 
   return (
     <div className="space-y-6">
@@ -207,10 +229,22 @@ export function ClientDashboard() {
           <h3 className="font-medium text-gray-900 mb-4">This month's recommendations</h3>
           {recommendations.length > 0 ? (
             <div className="space-y-3">
-              {recommendations.map((rec, i) => (
-                <div key={i} className="border-l-2 pl-3 py-1" style={{ borderColor: rec.color }}>
+              {recommendations.map((rec) => (
+                <div key={rec.id} className="border-l-2 pl-3 py-1 group relative" style={{ borderColor: rec.color }}>
                   <p className="text-sm text-gray-900 font-medium">{rec.title}</p>
                   <p className="text-xs text-gray-500 mt-0.5">{rec.detail}</p>
+                  {!rec.id.startsWith('fallback') && (
+                    <button
+                      onClick={async () => {
+                        await supabase.from('recommendations').update({ dismissed_at: new Date().toISOString() }).eq('id', rec.id)
+                        queryClient.invalidateQueries({ queryKey: ['client-recommendations'] })
+                      }}
+                      className="absolute top-1 right-0 text-gray-300 hover:text-gray-500 opacity-0 group-hover:opacity-100 text-xs"
+                      title="Dismiss"
+                    >
+                      &times;
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
