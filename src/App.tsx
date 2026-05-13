@@ -18,6 +18,7 @@ import { SalesLayout } from './portals/sales/SalesLayout'
 import { AdminDashboard } from './portals/admin/Dashboard'
 import { AdminJobs } from './portals/admin/Jobs'
 import { AdminClients } from './portals/admin/Clients'
+import { AdminClientDetail } from './portals/admin/ClientDetail'
 import { AdminInsights } from './portals/admin/Insights'
 import { AdminReviewers } from './portals/admin/Reviewers'
 import { AdminSales } from './portals/admin/Sales'
@@ -54,6 +55,7 @@ export default function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="jobs" element={<AdminJobs />} />
               <Route path="clients" element={<AdminClients />} />
+              <Route path="clients/:id" element={<AdminClientDetail />} />
               <Route path="insights" element={<AdminInsights />} />
               <Route path="reviewers" element={<AdminReviewers />} />
               <Route path="sales" element={<AdminSales />} />

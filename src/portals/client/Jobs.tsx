@@ -95,7 +95,7 @@ export function ClientJobs() {
                 const dueLabel = job.status === 'delivered' ? 'Done' : hoursLeft < 0 ? 'Overdue' : hoursLeft < 24 ? `${hoursLeft}h` : `${Math.round(hoursLeft / 24)}d`
 
                 return (
-                  <div key={job.id} className="p-3 border border-gray-100 rounded hover:border-gray-300 transition">
+                  <Link key={job.id} to={`/client/jobs/${job.id}`} className="block p-3 border border-gray-100 rounded hover:border-gray-300 transition">
                     <div className="flex items-start justify-between mb-1">
                       <div>
                         <p className="text-sm font-medium text-gray-900">{job.content_type}</p>
@@ -112,7 +112,7 @@ export function ClientJobs() {
                       {hter !== undefined && <span className="font-mono">hTER {hter.toFixed(3)}</span>}
                       <span>{new Date(job.submitted_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
                     </div>
-                  </div>
+                  </Link>
                 )
               })}
             </div>

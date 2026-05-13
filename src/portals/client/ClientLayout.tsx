@@ -5,6 +5,7 @@ import { useAuth } from '../../lib/auth'
 import { ClientDashboard } from './Dashboard'
 import { ClientSubmit } from './Submit'
 import { ClientJobs } from './Jobs'
+import { ClientJobDetail } from './JobDetail'
 import { ClientAudit } from './Audit'
 import { ClientAuditLog } from './AuditLog'
 import { ClientGlossary } from './Glossary'
@@ -51,6 +52,7 @@ export function ClientLayout() {
           <Route index element={<ClientDashboard />} />
           <Route path="submit" element={<ClientSubmit />} />
           <Route path="jobs" element={<ClientJobs />} />
+          <Route path="jobs/:id" element={<ClientJobDetail />} />
           <Route path="audit" element={<ClientAudit />} />
           <Route path="audit-log" element={<ClientAuditLog />} />
           <Route path="glossary" element={<ClientGlossary />} />

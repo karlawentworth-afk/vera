@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { inviteUser, resendInvite } from '../../lib/invite'
 import { Drawer } from '../../components/shared/Drawer'
@@ -143,7 +144,7 @@ export function AdminClients() {
                     </div>
                   </div>
                   <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
-                    <button className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1"><Eye className="w-3 h-3" /> View</button>
+                    <Link to={`/admin/clients/${org.id}`} className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1"><Eye className="w-3 h-3" /> View</Link>
                     <button className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1"><MessageSquare className="w-3 h-3" /> Contact</button>
                     <button className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1"><FileText className="w-3 h-3" /> Invoices</button>
                     {isInvited && contact?.email && (
