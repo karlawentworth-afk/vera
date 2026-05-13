@@ -6,7 +6,10 @@ import { RainbowStripe } from '../components/shared/RainbowStripe'
 import { VeraLogo } from '../components/shared/VeraLogo'
 import type { UserRole } from '../types/database'
 
+const DEMO_ENABLED = import.meta.env.VITE_DEMO_MODE === 'true'
+
 function roleToPath(role: UserRole): string {
+  if (role === 'admin' && DEMO_ENABLED) return '/portal-mode'
   switch (role) {
     case 'admin': return '/admin'
     case 'client': return '/client'

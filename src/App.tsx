@@ -4,7 +4,9 @@ import { AuthProvider } from './lib/auth'
 import { RequireAuth } from './lib/RequireAuth'
 import { LoginPage } from './pages/Login'
 import { AuthCallback } from './pages/AuthCallback'
-import { DemoSwitcher } from './components/shared/DemoSwitcher'
+import { PortalMode } from './pages/PortalMode'
+import { DemoPage } from './pages/Demo'
+import { DemoBanner } from './components/shared/DemoBanner'
 
 // Portal layouts
 import { AdminLayout } from './portals/admin/AdminLayout'
@@ -39,10 +41,12 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <DemoSwitcher />
+          <DemoBanner />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/portal-mode" element={<PortalMode />} />
+            <Route path="/demo" element={<DemoPage />} />
 
             {/* Admin portal */}
             <Route path="/admin" element={<RequireAuth allowedRoles={['admin']}><AdminLayout /></RequireAuth>}>
