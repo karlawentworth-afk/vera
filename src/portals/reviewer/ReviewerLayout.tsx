@@ -5,6 +5,7 @@ import { useAuth } from '../../lib/auth'
 import { ReviewerQueue } from './Queue'
 import { ReviewerScoring } from './Scoring'
 import { ReviewerCompleted } from './Completed'
+import { ReviewerJobDetail } from './JobDetail'
 import { ReviewerEarnings } from './Earnings'
 import { ReviewerSettings } from './Settings'
 
@@ -53,6 +54,7 @@ export function ReviewerLayout() {
         <Routes>
           <Route index element={<ReviewerQueue />} />
           <Route path="review/:jobId" element={<ReviewerScoring />} />
+          <Route path="jobs/:id" element={<ReviewerJobDetail />} />
           <Route path="review" element={<ReviewerQueue />} />
           <Route path="completed" element={<ReviewerCompleted />} />
           <Route path="earnings" element={<ReviewerEarnings />} />

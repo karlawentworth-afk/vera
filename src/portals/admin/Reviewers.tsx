@@ -132,7 +132,7 @@ export function AdminReviewers() {
                   : '—'
 
                 return (
-                  <tr key={r.id} className="border-b border-gray-50 hover:bg-gray-50">
+                  <tr key={r.id} onClick={() => window.location.href = `/admin/reviewers/${r.id}`} className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer">
                     <td className="py-3 px-4 font-medium text-gray-900">{r.full_name}</td>
                     <td className="py-3 px-4 text-gray-600">{r.languages?.join(', ') ?? '—'}</td>
                     <td className="py-3 px-4 text-gray-600">{r.specialism ?? '—'}</td>
