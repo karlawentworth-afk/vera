@@ -22,6 +22,7 @@ import { AdminClientDetail } from './portals/admin/ClientDetail'
 import { AdminInsights } from './portals/admin/Insights'
 import { AdminReviewerDetail } from './portals/admin/ReviewerDetail'
 import { AdminSalespersonDetail } from './portals/admin/SalespersonDetail'
+import { AdminReviewerInvoices } from './portals/admin/ReviewerInvoices'
 import { AdminReviewers } from './portals/admin/Reviewers'
 import { AdminSales } from './portals/admin/Sales'
 import { AdminQuotes } from './portals/admin/Quotes'
@@ -63,6 +64,7 @@ export default function App() {
               <Route path="reviewers/:id" element={<AdminReviewerDetail />} />
               <Route path="sales" element={<AdminSales />} />
               <Route path="sales/:id" element={<AdminSalespersonDetail />} />
+              <Route path="reviewer-invoices" element={<AdminReviewerInvoices />} />
               <Route path="quotes" element={<AdminQuotes />} />
               <Route path="invoices" element={<AdminInvoices />} />
               <Route path="settings" element={<AdminSettings />} />

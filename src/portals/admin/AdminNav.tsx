@@ -19,6 +19,7 @@ const NAV: NavItem[] = [
   { label: 'People', icon: Users, children: [
     { to: '/admin/clients', label: 'Clients', icon: Users },
     { to: '/admin/reviewers', label: 'Reviewers', icon: Users },
+    { to: '/admin/reviewer-invoices', label: 'Reviewer invoices', icon: Receipt },
     { to: '/admin/sales', label: 'Sales & commissions', icon: Users },
   ]},
   { label: 'Pipeline', icon: ClipboardList, children: [

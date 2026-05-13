@@ -7,6 +7,7 @@ import { ReviewerScoring } from './Scoring'
 import { ReviewerCompleted } from './Completed'
 import { ReviewerJobDetail } from './JobDetail'
 import { ReviewerEarnings } from './Earnings'
+import { ReviewerInvoices } from './Invoices'
 import { ReviewerSettings } from './Settings'
 
 const NAV_ITEMS = [
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
   { to: '/reviewer/review', label: 'Active review' },
   { to: '/reviewer/completed', label: 'Completed' },
   { to: '/reviewer/earnings', label: 'Earnings' },
+  { to: '/reviewer/invoices', label: 'Invoices' },
   { to: '/reviewer/settings', label: 'Settings' },
 ]
 
@@ -58,6 +60,7 @@ export function ReviewerLayout() {
           <Route path="review" element={<ReviewerQueue />} />
           <Route path="completed" element={<ReviewerCompleted />} />
           <Route path="earnings" element={<ReviewerEarnings />} />
+          <Route path="invoices" element={<ReviewerInvoices />} />
           <Route path="settings" element={<ReviewerSettings />} />
         </Routes>
       </div>
