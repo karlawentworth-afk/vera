@@ -17,8 +17,8 @@ import { AdminClients } from './portals/admin/Clients'
 import { AdminReviewers } from './portals/admin/Reviewers'
 import { AdminSales } from './portals/admin/Sales'
 import { AdminQuotes } from './portals/admin/Quotes'
+import { AdminInvoices } from './portals/admin/Invoices'
 import { AdminSettings } from './portals/admin/Settings'
-import { PlaceholderPage } from './components/shared/PlaceholderPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,13 +45,7 @@ export default function App() {
               <Route path="reviewers" element={<AdminReviewers />} />
               <Route path="sales" element={<AdminSales />} />
               <Route path="quotes" element={<AdminQuotes />} />
-              <Route path="invoices" element={
-                <PlaceholderPage
-                  title="Invoices & Payouts"
-                  icon="receipt"
-                  items={['Monthly subscription invoices synced to Xero', 'Overflow and expedited charge billing', 'Reviewer payout processing on the 28th']}
-                />
-              } />
+              <Route path="invoices" element={<AdminInvoices />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
 
