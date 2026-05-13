@@ -5,6 +5,7 @@ import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Drawer } from '../../components/shared/Drawer'
 import { JobDetail } from './JobDetail'
+import { NewJob } from './NewJob'
 import { Eye, Plus } from 'lucide-react'
 import type { JobStatus } from '../../types/database'
 
@@ -22,6 +23,7 @@ export function AdminJobs() {
   const [activeTab, setActiveTab] = useState<JobStatus | 'all'>('all')
   const [search, setSearch] = useState('')
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
+  const [showNewJob, setShowNewJob] = useState(false)
 
   const { data: jobs, isLoading } = useQuery({
     queryKey: ['admin-jobs'],
@@ -83,7 +85,7 @@ export function AdminJobs() {
               onChange={e => setSearch(e.target.value)}
               className="text-sm border border-gray-200 rounded px-3 py-1.5 focus:outline-none focus:border-gray-400"
             />
-            <button className="text-sm bg-gray-900 text-white rounded px-3 py-1.5 hover:bg-gray-800 flex items-center gap-2">
+            <button onClick={() => setShowNewJob(true)} className="text-sm bg-gray-900 text-white rounded px-3 py-1.5 hover:bg-gray-800 flex items-center gap-2">
               <Plus className="w-3.5 h-3.5" /> Manual entry
             </button>
           </div>
@@ -166,6 +168,20 @@ export function AdminJobs() {
         {selectedJobId && (
           <JobDetail jobId={selectedJobId} onClose={() => setSelectedJobId(null)} />
         )}
+      </Drawer>
+
+      <Drawer
+        open={showNewJob}
+        onClose={() => setShowNewJob(false)}
+        title="Create new job"
+      >
+        <NewJob
+          onClose={() => setShowNewJob(false)}
+          onCreated={(jobId) => {
+            setShowNewJob(false)
+            setSelectedJobId(jobId)
+          }}
+        />
       </Drawer>
     </>
   )
