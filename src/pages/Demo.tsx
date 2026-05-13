@@ -7,8 +7,6 @@ import { RainbowStripe } from '../components/shared/RainbowStripe'
 import { VeraLogo } from '../components/shared/VeraLogo'
 import { ArrowLeft } from 'lucide-react'
 
-const DEMO_ENABLED = import.meta.env.VITE_DEMO_MODE === 'true'
-
 const ROLE_ORDER = ['admin', 'client', 'reviewer', 'salesperson']
 const ROLE_LABELS: Record<string, string> = { admin: 'Admin', client: 'Clients', reviewer: 'Reviewers', salesperson: 'Salespeople' }
 const ROLE_COLORS: Record<string, { bg: string; color: string; accent: string }> = {
@@ -50,7 +48,7 @@ export function DemoPage() {
     return <div className="min-h-screen bg-white flex items-center justify-center"><div className="animate-pulse text-gray-400 text-sm">Loading...</div></div>
   }
 
-  if (!profile || profile.role !== 'admin' || !DEMO_ENABLED) {
+  if (!profile || profile.role !== 'admin') {
     return <Navigate to="/login" replace />
   }
 

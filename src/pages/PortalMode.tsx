@@ -4,8 +4,6 @@ import { RainbowStripe } from '../components/shared/RainbowStripe'
 import { VeraLogo } from '../components/shared/VeraLogo'
 import { Monitor, Users } from 'lucide-react'
 
-const DEMO_ENABLED = import.meta.env.VITE_DEMO_MODE === 'true'
-
 export function PortalMode() {
   const { profile, loading } = useAuth()
 
@@ -15,10 +13,6 @@ export function PortalMode() {
 
   if (!profile || profile.role !== 'admin') {
     return <Navigate to="/login" replace />
-  }
-
-  if (!DEMO_ENABLED) {
-    return <Navigate to="/admin" replace />
   }
 
   return (
