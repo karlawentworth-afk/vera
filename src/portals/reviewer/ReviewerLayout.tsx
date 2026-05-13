@@ -5,6 +5,7 @@ import { PlaceholderPage } from '../../components/shared/PlaceholderPage'
 import { useAuth } from '../../lib/auth'
 import { ReviewerQueue } from './Queue'
 import { ReviewerScoring } from './Scoring'
+import { ReviewerEarnings } from './Earnings'
 
 const NAV_ITEMS = [
   { to: '/reviewer', label: 'My queue', end: true },
@@ -70,9 +71,7 @@ export function ReviewerLayout() {
           <Route path="completed" element={
             <PlaceholderPage title="Completed" icon="clock" items={['Read-only list of past reviews with hTER scores', 'Earnings per job', 'Downloadable audit records']} />
           } />
-          <Route path="earnings" element={
-            <PlaceholderPage title="Earnings" icon="credit-card" items={['Current month estimate', 'Past payouts on the 28th', 'Downloadable monthly statements']} />
-          } />
+          <Route path="earnings" element={<ReviewerEarnings />} />
         </Routes>
       </div>
     </div>
