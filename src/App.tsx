@@ -14,6 +14,7 @@ import { AdminDashboard } from './portals/admin/Dashboard'
 import { AdminJobs } from './portals/admin/Jobs'
 import { AdminClients } from './portals/admin/Clients'
 import { AdminReviewers } from './portals/admin/Reviewers'
+import { AdminSettings } from './portals/admin/Settings'
 import { PlaceholderPage } from './components/shared/PlaceholderPage'
 
 const queryClient = new QueryClient({
@@ -53,13 +54,7 @@ export default function App() {
                   items={['Monthly subscription invoices synced to Xero', 'Overflow and expedited charge billing', 'Reviewer payout processing on the 28th']}
                 />
               } />
-              <Route path="settings" element={
-                <PlaceholderPage
-                  title="Tiers & Pricing"
-                  icon="settings"
-                  items={['Edit subscription tier prices and word allowances', 'Set overflow rates and expedited surcharges', 'Manage integration connections (Stripe, Xero)']}
-                />
-              } />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
 
             {/* Client portal */}
