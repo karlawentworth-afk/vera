@@ -8,6 +8,7 @@ import { ClientSubmit } from './Submit'
 import { ClientAudit } from './Audit'
 import { ClientAuditLog } from './AuditLog'
 import { ClientGlossary } from './Glossary'
+import { OnboardingOverlay } from '../../components/shared/OnboardingOverlay'
 
 const NAV_ITEMS = [
   { to: '/client', label: 'Dashboard', end: true },
@@ -43,6 +44,7 @@ export function ClientLayout() {
         }
       />
 
+      <OnboardingOverlay />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <Routes>
           <Route index element={<ClientDashboard />} />

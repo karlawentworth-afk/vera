@@ -175,12 +175,34 @@ export function ClientDashboard() {
     ? liveRecs.map(r => ({ color: SEVERITY_COLORS[r.severity] ?? '#1FA1D6', title: r.title, detail: r.body, id: r.id }))
     : ((org.recommendations as { color: string; title: string; detail: string }[]) ?? []).map((r, i) => ({ ...r, id: `fallback-${i}` }))
 
+  // Empty state — no jobs yet
+  const hasJobs = (jobs?.length ?? 0) > 0
+
   return (
     <div className="space-y-6">
       <div className="mb-6">
         <p className="text-xs uppercase tracking-widest text-gray-400 font-medium">Client portal</p>
         <h1 className="text-2xl font-light text-gray-900 mt-1">{org.name}</h1>
       </div>
+
+      {!hasJobs && (
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <RainbowStripe height={3} />
+          <div className="p-8 text-center">
+            <h2 className="text-lg font-medium text-gray-900 mb-2">Welcome to Vera</h2>
+            <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+              Submit your first AI-translated content for expert review. We'll score it, give you an AI Health Score, and build your governance audit trail.
+            </p>
+            <Link to="/client/submit" className="inline-block bg-gray-900 text-white rounded-lg px-6 py-3 text-sm font-medium hover:bg-gray-800">
+              Submit your first job
+            </Link>
+            <div className="mt-6 flex justify-center gap-6 text-xs text-gray-500">
+              <Link to="/client/glossary" className="hover:text-gray-700">Add your glossary</Link>
+              <Link to="/client/audit" className="hover:text-gray-700">View AI health</Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Metric cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
