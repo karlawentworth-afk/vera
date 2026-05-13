@@ -29,6 +29,7 @@ const NAV: NavItem[] = [
     children: [
       { to: '/admin/jobs', label: 'Jobs', icon: FileText },
       { to: '/admin/audit-log', label: 'Audit log', icon: Shield },
+      { to: '/admin/cron', label: 'Scheduled jobs', icon: ClipboardList },
     ],
   },
   {
