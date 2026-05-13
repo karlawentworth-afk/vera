@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Download, ChevronDown, ChevronRight, Search } from 'lucide-react'
+import { generateAuditLogPdf } from '../../lib/pdf'
 
 const COLORS = {
   admin: '#8E2882', client: '#1FA1D6', reviewer: '#0F8F4D', salesperson: '#EE7C24',
@@ -124,7 +125,24 @@ export function AdminAuditLog() {
           {actors?.map(a => <option key={a.id} value={a.id}>{a.full_name} ({a.role})</option>)}
         </select>
         <button onClick={exportCsv} className="text-sm border border-gray-200 rounded px-3 py-1.5 hover:bg-gray-50 flex items-center gap-1">
-          <Download className="w-3.5 h-3.5" /> Export CSV
+          <Download className="w-3.5 h-3.5" /> CSV
+        </button>
+        <button
+          onClick={() => generateAuditLogPdf({
+            filters: [actionFilter, entityFilter, actorFilter, search].filter(Boolean).join(', ') || 'None',
+            entries: rows.map(r => {
+              const actor = r.actor as { full_name: string; role: string } | null
+              return {
+                timestamp: new Date(r.created_at).toLocaleString('en-GB'),
+                actor: actor?.full_name ?? '—', role: actor?.role ?? '—',
+                action: r.action, entity: `${r.entity_type} ${r.entity_id.substring(0, 8)}`,
+                summary: r.details ? Object.entries(r.details as Record<string, unknown>).filter(([,v]) => v != null).map(([k,v]) => `${k}: ${v}`).join(', ') : '—',
+              }
+            }),
+          })}
+          className="text-sm border border-gray-200 rounded px-3 py-1.5 hover:bg-gray-50 flex items-center gap-1"
+        >
+          <Download className="w-3.5 h-3.5" /> PDF
         </button>
       </div>
 

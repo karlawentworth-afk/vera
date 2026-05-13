@@ -6,6 +6,7 @@ import { MetricCard } from '../../components/shared/MetricCard'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Download, ChevronRight } from 'lucide-react'
+import { generateClientAuditPdf } from '../../lib/pdf'
 
 const COLORS = { green: '#0F8F4D', cyan: '#1FA1D6', purple: '#8E2882', orange: '#EE7C24' }
 
@@ -246,7 +247,35 @@ export function ClientAudit() {
               <h3 className="font-medium text-gray-900">Audit trail</h3>
               <p className="text-sm text-gray-500">Every reviewed job. Defensible to procurement, board, regulators.</p>
             </div>
-            <button className="flex items-center gap-2 text-sm border border-gray-200 rounded px-3 py-1.5 hover:bg-gray-50">
+            <button
+              onClick={() => generateClientAuditPdf({
+                orgName: org?.name ?? 'Client',
+                healthScore,
+                avgHter: hterValues.length > 0 ? avgHter : null,
+                totalJobs: deliveredWithScores.length,
+                totalWords: totalReviewedWords,
+                langPairs: langPairs.map(lp => ({ pair: lp.pair, hter: lp.avgHter, words: lp.words, status: hterLabel(lp.avgHter) })),
+                toolPerf: (() => {
+                  const ts: Record<string, { hterSum: number; count: number; words: number }> = {}
+                  deliveredWithScores.forEach(j => {
+                    const tool = j.ai_tool_used || 'Unknown'; const s = scoreMap[j.id]
+                    if (!ts[tool]) ts[tool] = { hterSum: 0, count: 0, words: 0 }
+                    ts[tool].words += j.word_count
+                    if (s) { ts[tool].hterSum += Number(s.hter_score); ts[tool].count += 1 }
+                  })
+                  return Object.entries(ts).map(([tool, s]) => ({ tool, hter: s.count > 0 ? s.hterSum / s.count : 0, words: s.words }))
+                })(),
+                jobs: deliveredWithScores.map(j => {
+                  const s = scoreMap[j.id]; const r = s?.reviewer as { full_name: string } | null
+                  return {
+                    ref: j.job_number, date: j.delivered_at ? new Date(j.delivered_at).toLocaleDateString('en-GB') : '—',
+                    type: j.content_type, lang: `${j.source_language} → ${j.target_language}`,
+                    reviewer: r?.full_name ?? '—', hter: s ? Number(s.hter_score).toFixed(3) : '—', status: 'Delivered',
+                  }
+                }),
+              })}
+              className="flex items-center gap-2 text-sm border border-gray-200 rounded px-3 py-1.5 hover:bg-gray-50"
+            >
               <Download className="w-4 h-4" /> Export PDF
             </button>
           </div>
