@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './lib/auth'
 import { RequireAuth } from './lib/RequireAuth'
 import { LoginPage } from './pages/Login'
+import { AuthCallback } from './pages/AuthCallback'
 import { DemoSwitcher } from './components/shared/DemoSwitcher'
 
 // Portal layouts
@@ -41,6 +42,7 @@ export default function App() {
           <DemoSwitcher />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
 
             {/* Admin portal */}
             <Route path="/admin" element={<RequireAuth allowedRoles={['admin']}><AdminLayout /></RequireAuth>}>
