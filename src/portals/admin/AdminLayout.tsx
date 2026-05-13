@@ -18,6 +18,9 @@ export function AdminLayout() {
       <AdminNav
         rightContent={
           <>
+            {import.meta.env.VITE_DEMO_MODE === 'true' && (
+              <a href="/demo" className="hidden lg:inline text-xs text-white bg-gray-700 hover:bg-gray-600 rounded px-2 py-1">Demo</a>
+            )}
             <a href="/client" className="hidden lg:inline text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1">Client</a>
             <a href="/reviewer" className="hidden lg:inline text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1">Reviewer</a>
             <Bell className="w-4 h-4 text-gray-400 hidden sm:block" />
