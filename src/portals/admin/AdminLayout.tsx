@@ -46,6 +46,8 @@ export function AdminLayout() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            <a href="/client" className="text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1">View as client</a>
+            <a href="/reviewer" className="text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1">View as reviewer</a>
             <Bell className="w-4 h-4 text-gray-400" />
             <div className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-medium">
               {initials}

@@ -1,8 +1,18 @@
-import { Routes, Route } from 'react-router-dom'
+import { NavLink, Routes, Route } from 'react-router-dom'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { VeraLogo } from '../../components/shared/VeraLogo'
 import { PlaceholderPage } from '../../components/shared/PlaceholderPage'
 import { useAuth } from '../../lib/auth'
+import { ClientDashboard } from './Dashboard'
+import { ClientAudit } from './Audit'
+
+const NAV_ITEMS = [
+  { to: '/client', label: 'Dashboard', end: true },
+  { to: '/client/submit', label: 'Submit work' },
+  { to: '/client/jobs', label: 'My jobs' },
+  { to: '/client/audit', label: 'AI health & audit' },
+  { to: '/client/subscription', label: 'Subscription' },
+]
 
 export function ClientLayout() {
   const { profile, signOut } = useAuth()
@@ -20,10 +30,17 @@ export function ClientLayout() {
           <div className="flex items-center gap-8">
             <VeraLogo size="sm" />
             <nav className="flex gap-1">
-              {['Dashboard', 'Submit work', 'My jobs', 'AI health & audit', 'Subscription'].map(label => (
-                <span key={label} className="px-3 py-1.5 text-sm text-gray-400 cursor-default">
-                  {label}
-                </span>
+              {NAV_ITEMS.map(item => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `px-3 py-1.5 text-sm rounded ${isActive ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-gray-900'}`
+                  }
+                >
+                  {item.label}
+                </NavLink>
               ))}
             </nav>
           </div>
@@ -39,23 +56,19 @@ export function ClientLayout() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-6">
-          <p className="text-xs uppercase tracking-widest text-gray-400 font-medium">Client portal</p>
-          <h1 className="text-2xl font-light text-gray-900 mt-1">{profile?.full_name ?? 'Client'}</h1>
-        </div>
-
         <Routes>
-          <Route path="*" element={
-            <PlaceholderPage
-              title="Client Portal"
-              icon="upload"
-              items={[
-                'Submit AI-translated content for expert review',
-                'Track jobs and view your AI Health Score dashboard',
-                'Manage your subscription and view invoices',
-              ]}
-            />
+          <Route index element={<ClientDashboard />} />
+          <Route path="audit" element={<ClientAudit />} />
+          <Route path="submit" element={
+            <PlaceholderPage title="Submit work" icon="upload" items={['Upload AI-translated content for expert review', 'Select language pair, content type, and urgency', 'Track submission through to delivery']} />
           } />
+          <Route path="jobs" element={
+            <PlaceholderPage title="My jobs" icon="file-text" items={['View all submitted jobs with status tracking', 'Filter by status, language, date', 'Click through to full job detail and audit record']} />
+          } />
+          <Route path="subscription" element={
+            <PlaceholderPage title="Subscription" icon="credit-card" items={['View current tier and word usage', 'Compare available plans', 'Manage payment method and view invoices']} />
+          } />
+          <Route path="*" element={<ClientDashboard />} />
         </Routes>
       </div>
     </div>
