@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/admin', label: 'Dashboard', end: true },
   { to: '/admin/jobs', label: 'Jobs' },
   { to: '/admin/clients', label: 'Clients' },
+  { to: '/admin/insights', label: 'AI Insights' },
   { to: '/admin/reviewers', label: 'Reviewers' },
   { to: '/admin/sales', label: 'Sales & commissions' },
   { to: '/admin/quotes', label: 'Quotes' },

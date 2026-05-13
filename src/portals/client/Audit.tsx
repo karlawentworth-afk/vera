@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { useClientOrgId } from '../../lib/useClientOrg'
+import { RAINBOW } from '../../lib/constants'
 import { MetricCard } from '../../components/shared/MetricCard'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -23,7 +24,7 @@ export function ClientAudit() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('jobs')
-        .select('id, job_number, source_language, target_language, content_type, word_count, status, submitted_at, delivered_at, reviewer_id')
+        .select('id, job_number, source_language, target_language, content_type, word_count, status, submitted_at, delivered_at, reviewer_id, ai_tool_used')
         .eq('organisation_id', orgId!)
         .order('submitted_at', { ascending: false })
       if (error) throw error
@@ -180,6 +181,61 @@ export function ClientAudit() {
           )}
         </div>
       </div>
+
+      {/* AI tool performance */}
+      {(() => {
+        const toolStats: Record<string, { hterSum: number; count: number; words: number }> = {}
+        deliveredWithScores.forEach(j => {
+          const tool = j.ai_tool_used || 'Unknown'
+          const score = scoreMap[j.id]
+          if (!toolStats[tool]) toolStats[tool] = { hterSum: 0, count: 0, words: 0 }
+          toolStats[tool].words += j.word_count
+          if (score) {
+            toolStats[tool].hterSum += Number(score.hter_score)
+            toolStats[tool].count += 1
+          }
+        })
+        const toolList = Object.entries(toolStats)
+          .map(([tool, s]) => ({ tool, avgHter: s.count > 0 ? s.hterSum / s.count : null, words: s.words, count: s.count }))
+          .sort((a, b) => (a.avgHter ?? 1) - (b.avgHter ?? 1))
+
+        if (toolList.length === 0) return null
+
+        const best = toolList[0]
+        const worst = toolList[toolList.length - 1]
+
+        return (
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <RainbowStripe height={3} />
+            <div className="p-6">
+              <h3 className="font-medium text-gray-900 mb-1">Your AI tools — how each one performs for you</h3>
+              {best && worst && best.tool !== worst.tool && best.avgHter !== null && worst.avgHter !== null && (
+                <p className="text-sm text-gray-500 mb-4">
+                  <span className="font-medium" style={{ color: RAINBOW.green }}>{best.tool}</span> performs best (hTER {best.avgHter.toFixed(2)}).
+                  {worst.avgHter > 0.2 && <> <span className="font-medium" style={{ color: RAINBOW.orange }}>{worst.tool}</span> needs the most editing (hTER {worst.avgHter.toFixed(2)}).</>}
+                </p>
+              )}
+              <div className="space-y-3">
+                {toolList.map(t => (
+                  <div key={t.tool} className="flex items-center gap-3">
+                    <div className="w-36 text-sm font-medium text-gray-900 truncate">{t.tool}</div>
+                    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      {t.avgHter !== null && (
+                        <div className="h-full rounded-full" style={{
+                          width: `${Math.min((t.avgHter / 0.4) * 100, 100)}%`,
+                          background: t.avgHter < 0.15 ? RAINBOW.green : t.avgHter < 0.25 ? RAINBOW.cyan : RAINBOW.orange,
+                        }} />
+                      )}
+                    </div>
+                    <div className="w-12 text-xs font-mono text-gray-600">{t.avgHter !== null ? t.avgHter.toFixed(2) : '—'}</div>
+                    <div className="w-16 text-xs text-gray-500 text-right">{t.words.toLocaleString()}w</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Audit trail */}
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">

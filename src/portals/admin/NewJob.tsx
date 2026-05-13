@@ -3,21 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
-
-const LANGUAGES = ['EN', 'DE', 'FR', 'ES', 'IT', 'JA', 'PT', 'ZH', 'KO', 'NL', 'SV', 'PL']
-const CONTENT_TYPES = [
-  'Compliance documentation',
-  'Marketing campaign',
-  'Training materials',
-  'Customer communications',
-  'Technical documentation',
-  'Clinical summaries',
-  'Legal disclaimers',
-  'Website content',
-  'Patient information leaflets',
-  'Ground crew briefings',
-]
-const AI_TOOLS = ['ChatGPT', 'Claude', 'DeepL', 'Google Translate', 'Mixed / Other']
+import { AI_TOOLS, LANGUAGES, CONTENT_TYPES } from '../../lib/constants'
 
 interface NewJobProps {
   onClose: () => void

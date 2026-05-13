@@ -7,14 +7,9 @@ import { useClientOrgId } from '../../lib/useClientOrg'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Upload, X } from 'lucide-react'
 
-const COLORS = { purple: '#8E2882', orange: '#EE7C24' }
+import { AI_TOOLS, LANGUAGES, CONTENT_TYPES } from '../../lib/constants'
 
-const LANGUAGES = ['EN', 'DE', 'FR', 'ES', 'IT', 'JA', 'PT', 'ZH', 'KO', 'NL', 'SV', 'PL']
-const CONTENT_TYPES = [
-  'Compliance documentation', 'Marketing campaign', 'Training materials',
-  'Customer communications', 'Technical documentation',
-]
-const AI_TOOLS = ['ChatGPT', 'Claude', 'DeepL', 'Google Translate', 'Mixed / Other']
+const COLORS = { purple: '#8E2882', orange: '#EE7C24' }
 const ACCEPTED_TYPES = ['.docx', '.xliff', '.txt', '.csv', '.pdf']
 
 function extractWordCountFromText(text: string): number {

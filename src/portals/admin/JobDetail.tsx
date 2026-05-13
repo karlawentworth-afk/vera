@@ -214,7 +214,10 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
       </div>
 
       {job.ai_tool_used && (
-        <div className="text-xs text-gray-500">AI tool: <span className="text-gray-700">{job.ai_tool_used}</span></div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">AI tool:</span>
+          <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-700 font-medium">{job.ai_tool_used}</span>
+        </div>
       )}
 
       {job.notes && (
