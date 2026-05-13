@@ -59,7 +59,7 @@ export function DemoPage() {
     grouped[p.role]!.push(p)
   })
 
-  async function switchToUser(userId: string, _role: string) {
+  async function switchToUser(userId: string, role: string) {
     setSwitching(userId)
     try {
       const { data: { session } } = await supabase.auth.getSession()
@@ -76,14 +76,25 @@ export function DemoPage() {
         return
       }
 
-      // The action_link contains tokens we can use
-      // Navigate to it to complete the auth flow
-      if (data.action_link) {
-        // Store demo mode flag
-        sessionStorage.setItem('vera_demo_mode', 'true')
-        sessionStorage.setItem('vera_demo_admin_email', profile!.email)
-        window.location.href = data.action_link
+      // Sign out current admin, sign in as target user with password
+      sessionStorage.setItem('vera_demo_mode', 'true')
+      sessionStorage.setItem('vera_demo_admin_email', profile!.email)
+
+      await supabase.auth.signOut()
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      })
+
+      if (signInErr) {
+        alert('Sign-in failed: ' + signInErr.message)
+        setSwitching(null)
+        return
       }
+
+      // Redirect to the right portal
+      const paths: Record<string, string> = { admin: '/admin', client: '/client', reviewer: '/reviewer', salesperson: '/sales' }
+      window.location.href = paths[role] || '/login'
     } catch (err) {
       alert('Switch failed: ' + err)
       setSwitching(null)

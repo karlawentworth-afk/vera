@@ -28,24 +28,11 @@ export default async (req: Request, _context: Context) => {
     return new Response(JSON.stringify({ error: "User not found" }), { status: 404 })
   }
 
-  // Generate a magic link that auto-signs in (no email sent)
-  const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-    type: "magiclink",
-    email: targetUser.user.email,
-    options: {
-      redirectTo: (process.env.SITE_URL || process.env.URL || "https://ecls-vera.netlify.app") + "/auth/callback",
-    },
-  })
+  // Ensure they have the demo password set
+  await supabase.auth.admin.updateUserById(user_id, { password: "VeraDemo2026!" })
 
-  if (linkErr || !linkData?.properties?.action_link) {
-    return new Response(JSON.stringify({ error: linkErr?.message || "Failed to generate link" }), { status: 500 })
-  }
-
-  // Extract the token from the action_link and return it
-  // The action_link contains the full URL with token params
   return new Response(JSON.stringify({
-    action_link: linkData.properties.action_link,
-    hashed_token: linkData.properties.hashed_token,
     email: targetUser.user.email,
+    password: "VeraDemo2026!",
   }), { status: 200, headers: { "Content-Type": "application/json" } })
 }
