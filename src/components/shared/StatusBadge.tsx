@@ -2,6 +2,7 @@ import type { JobStatus } from '../../types/database'
 
 const STATUS_CONFIG: Record<JobStatus, { bg: string; color: string; label: string }> = {
   unallocated: { bg: '#D9211E20', color: '#D9211E', label: 'Unallocated' },
+  allocated: { bg: '#1B4F9E20', color: '#1B4F9E', label: 'Allocated' },
   in_review: { bg: '#1FA1D620', color: '#1FA1D6', label: 'In review' },
   awaiting_signoff: { bg: '#EE7C2420', color: '#EE7C24', label: 'Awaiting signoff' },
   delivered: { bg: '#0F8F4D20', color: '#0F8F4D', label: 'Delivered' },

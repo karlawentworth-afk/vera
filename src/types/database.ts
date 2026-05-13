@@ -1,6 +1,6 @@
 export type UserRole = 'admin' | 'client' | 'reviewer'
 
-export type JobStatus = 'unallocated' | 'in_review' | 'awaiting_signoff' | 'delivered' | 'cancelled'
+export type JobStatus = 'unallocated' | 'allocated' | 'in_review' | 'awaiting_signoff' | 'delivered' | 'cancelled'
 
 export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined'
 
