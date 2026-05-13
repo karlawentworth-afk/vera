@@ -14,7 +14,8 @@
       "Bash(git branch *)",
       "Bash(git push *)",
       "Bash(git pull *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)"
     ]
   }
 }

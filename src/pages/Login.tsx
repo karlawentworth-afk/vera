@@ -17,6 +17,8 @@ function roleToPath(role: UserRole): string {
 export function LoginPage() {
   const { session, profile, loading } = useAuth()
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [mode, setMode] = useState<'password' | 'magic'>('password')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -33,7 +35,20 @@ export function LoginPage() {
     return <Navigate to={roleToPath(profile.role)} replace />
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handlePasswordLogin(e: React.FormEvent) {
+    e.preventDefault()
+    setError('')
+    setSubmitting(true)
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    setSubmitting(false)
+    if (error) {
+      setError(error.message)
+    }
+  }
+
+  async function handleMagicLink(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     setSubmitting(true)
@@ -46,7 +61,6 @@ export function LoginPage() {
     })
 
     setSubmitting(false)
-
     if (error) {
       setError(error.message)
     } else {
@@ -79,8 +93,49 @@ export function LoginPage() {
               Try a different email
             </button>
           </div>
+        ) : mode === 'password' ? (
+          <form onSubmit={handlePasswordLogin}>
+            <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2">
+              Email address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="emma@ecls.co.uk"
+              required
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+            />
+            <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2 mt-4">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+            />
+            {error && (
+              <p className="mt-2 text-sm text-vera-red">{error}</p>
+            )}
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-4 w-full bg-gray-900 text-white rounded-lg py-3 text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+            >
+              {submitting ? 'Signing in...' : 'Sign in'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('magic')}
+              className="mt-3 w-full text-sm text-gray-500 hover:text-gray-700"
+            >
+              Use magic link instead
+            </button>
+          </form>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleMagicLink}>
             <label className="text-xs uppercase tracking-wide text-gray-500 font-medium block mb-2">
               Email address
             </label>
@@ -101,6 +156,13 @@ export function LoginPage() {
               className="mt-4 w-full bg-gray-900 text-white rounded-lg py-3 text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
             >
               {submitting ? 'Sending...' : 'Send magic link'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('password')}
+              className="mt-3 w-full text-sm text-gray-500 hover:text-gray-700"
+            >
+              Use password instead
             </button>
           </form>
         )}
