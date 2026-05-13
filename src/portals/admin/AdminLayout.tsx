@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { to: '/admin/quotes', label: 'Quotes' },
   { to: '/admin/invoices', label: 'Invoices & Pay' },
   { to: '/admin/settings', label: 'Tiers & pricing' },
+  { to: '/admin/audit-log', label: 'Audit log' },
 ]
 
 export function AdminLayout() {

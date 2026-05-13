@@ -6,6 +6,7 @@ import { useAuth } from '../../lib/auth'
 import { ClientDashboard } from './Dashboard'
 import { ClientSubmit } from './Submit'
 import { ClientAudit } from './Audit'
+import { ClientAuditLog } from './AuditLog'
 
 const NAV_ITEMS = [
   { to: '/client', label: 'Dashboard', end: true },
@@ -60,6 +61,7 @@ export function ClientLayout() {
         <Routes>
           <Route index element={<ClientDashboard />} />
           <Route path="audit" element={<ClientAudit />} />
+          <Route path="audit-log" element={<ClientAuditLog />} />
           <Route path="submit" element={<ClientSubmit />} />
           <Route path="jobs" element={
             <PlaceholderPage title="My jobs" icon="file-text" items={['View all submitted jobs with status tracking', 'Filter by status, language, date', 'Click through to full job detail and audit record']} />

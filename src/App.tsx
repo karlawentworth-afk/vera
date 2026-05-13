@@ -20,6 +20,7 @@ import { AdminSales } from './portals/admin/Sales'
 import { AdminQuotes } from './portals/admin/Quotes'
 import { AdminInvoices } from './portals/admin/Invoices'
 import { AdminSettings } from './portals/admin/Settings'
+import { AdminAuditLog } from './portals/admin/AuditLog'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="quotes" element={<AdminQuotes />} />
               <Route path="invoices" element={<AdminInvoices />} />
               <Route path="settings" element={<AdminSettings />} />
+              <Route path="audit-log" element={<AdminAuditLog />} />
             </Route>
 
             {/* Client portal */}
