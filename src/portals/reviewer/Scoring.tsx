@@ -5,7 +5,8 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
-import { FileText, Zap } from 'lucide-react'
+import { Zap } from 'lucide-react'
+import { SegmentEditor } from '../../components/shared/SegmentEditor'
 
 const COLORS = { green: '#0F8F4D', orange: '#EE7C24', red: '#D9211E', cyan: '#1FA1D6' }
 
@@ -242,22 +243,13 @@ export function ReviewerScoring() {
             </div>
           )}
 
-          {/* File placeholder */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div className="border border-gray-100 rounded p-4">
-              <p className="text-xs uppercase tracking-wide text-gray-500 font-medium mb-2">Source ({job.source_language})</p>
-              <div className="flex items-center gap-2 text-gray-400">
-                <FileText className="w-4 h-4" />
-                <span className="text-sm">Source file will appear here</span>
-              </div>
-            </div>
-            <div className="border-2 rounded p-4" style={{ borderColor: COLORS.cyan + '60' }}>
-              <p className="text-xs uppercase tracking-wide font-medium mb-2" style={{ color: COLORS.cyan }}>AI translation ({job.target_language})</p>
-              <div className="flex items-center gap-2 text-gray-400">
-                <FileText className="w-4 h-4" />
-                <span className="text-sm">Translated file will appear here</span>
-              </div>
-            </div>
+          {/* Segment-level editor */}
+          <div className="mb-6">
+            <h4 className="font-medium text-gray-900 mb-3">Content segments</h4>
+            <SegmentEditor
+              jobId={jobId!}
+              preflightData={job.preflight_data as { glossary_violations?: { term: string; expected: string; severity: string }[]; risky_segments?: { description: string; reason: string; severity: string }[]; brand_voice_issues?: { description: string; severity: string }[] } | null}
+            />
           </div>
 
           {/* Pre-flight check */}
