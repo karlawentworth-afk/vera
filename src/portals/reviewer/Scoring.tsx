@@ -208,10 +208,31 @@ export function ReviewerScoring() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-6 flex-wrap">
             <StatusBadge status={job.status} />
             {job.notes && <span className="text-xs text-gray-500">· Has client notes</span>}
+            {job.iteration_count > 1 && (
+              <span className="text-xs px-2 py-0.5 rounded bg-orange-50 text-orange-700">
+                Iteration {job.iteration_count}
+              </span>
+            )}
           </div>
+
+          {/* Returned for revision banner */}
+          {(() => {
+            const iterations = (job.review_iterations ?? []) as Array<{ returned_at: string; feedback_text: string }>
+            const latest = iterations[iterations.length - 1]
+            if (!latest) return null
+            return (
+              <div className="border-2 border-orange-200 bg-orange-50 rounded-lg p-4 mb-6">
+                <p className="text-xs uppercase tracking-wide text-orange-700 font-medium mb-1">Returned for revision</p>
+                <p className="text-sm text-gray-900">{latest.feedback_text}</p>
+                <p className="text-xs text-gray-500 mt-2">
+                  Returned {new Date(latest.returned_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+            )
+          })()}
 
           {/* Client notes */}
           {job.notes && (

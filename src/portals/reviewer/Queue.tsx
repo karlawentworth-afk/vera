@@ -87,6 +87,9 @@ export function ReviewerQueue() {
                         <p className="text-xs text-gray-500">{job.content_type}</p>
                       </div>
                       <div className="flex items-center gap-2">
+                        {job.iteration_count > 1 && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 font-medium">Returned</span>
+                        )}
                         <StatusBadge status={job.status} />
                         <ChevronRight className="w-3 h-3 text-gray-400" />
                       </div>

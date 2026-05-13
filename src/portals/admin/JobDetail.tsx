@@ -21,6 +21,8 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
   const { profile } = useAuth()
   const [selectedReviewerId, setSelectedReviewerId] = useState<string>('')
   const [signoffNotes, setSignoffNotes] = useState('')
+  const [showReturnModal, setShowReturnModal] = useState(false)
+  const [returnFeedback, setReturnFeedback] = useState('')
 
   const { data: job, isLoading } = useQuery({
     queryKey: ['job-detail', jobId],
@@ -132,6 +134,57 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
       queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] })
       queryClient.invalidateQueries({ queryKey: ['admin-jobs'] })
       onClose()
+    },
+  })
+
+  const returnMutation = useMutation({
+    mutationFn: async () => {
+      if (returnFeedback.length < 20) throw new Error('Please provide at least 20 characters of feedback.')
+
+      // Get current iterations
+      const currentIterations = (job?.review_iterations ?? []) as Array<Record<string, unknown>>
+      const iterationNumber = currentIterations.length + 1
+
+      const newIteration = {
+        iteration_number: iterationNumber,
+        returned_at: new Date().toISOString(),
+        returned_by: profile!.id,
+        feedback_text: returnFeedback,
+        original_scores: score ? {
+          accuracy: score.accuracy,
+          terminology: score.terminology,
+          tone_register: score.tone_register,
+          brand_voice: score.brand_voice,
+          cultural_fit: score.cultural_fit,
+          risk: score.risk,
+          hter_score: score.hter_score,
+        } : null,
+      }
+
+      const { error } = await supabase
+        .from('jobs')
+        .update({
+          status: 'in_review',
+          signed_off_at: null,
+          review_iterations: [...currentIterations, newIteration],
+          iteration_count: iterationNumber + 1,
+        })
+        .eq('id', jobId)
+      if (error) throw error
+
+      await supabase.from('audit_log').insert({
+        actor_id: profile!.id,
+        action: 'returned_to_reviewer',
+        entity_type: 'job',
+        entity_id: jobId,
+        details: { iteration: iterationNumber, feedback: returnFeedback },
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] })
+      queryClient.invalidateQueries({ queryKey: ['admin-jobs'] })
+      setShowReturnModal(false)
+      setReturnFeedback('')
     },
   })
 
@@ -416,19 +469,68 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
             />
           </div>
 
-          <button
-            onClick={() => signoffMutation.mutate()}
-            disabled={signoffMutation.isPending}
-            className="w-full bg-gray-900 text-white rounded-lg py-3 text-sm font-medium hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <CheckCircle className="w-4 h-4" />
-            {signoffMutation.isPending ? 'Signing off...' : 'Sign off & deliver'}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowReturnModal(true)}
+              className="flex-1 border border-gray-200 rounded-lg py-3 text-sm hover:bg-gray-50 flex items-center justify-center gap-2 text-gray-700"
+            >
+              <AlertCircle className="w-4 h-4" />
+              Return to reviewer
+            </button>
+            <button
+              onClick={() => signoffMutation.mutate()}
+              disabled={signoffMutation.isPending}
+              className="flex-1 bg-gray-900 text-white rounded-lg py-3 text-sm font-medium hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <CheckCircle className="w-4 h-4" />
+              {signoffMutation.isPending ? 'Signing off...' : 'Sign off & deliver'}
+            </button>
+          </div>
 
           {signoffMutation.isError && (
             <p className="text-sm text-red-600">Failed to sign off. Please try again.</p>
           )}
         </div>
+      )}
+
+      {/* Iteration badge */}
+      {job.iteration_count && job.iteration_count > 1 && (
+        <div className="text-xs px-2 py-1 rounded bg-orange-50 text-orange-700 inline-block">
+          Iteration {job.iteration_count} — returned {job.iteration_count - 1} time{job.iteration_count > 2 ? 's' : ''}
+        </div>
+      )}
+
+      {/* Return to reviewer modal */}
+      {showReturnModal && (
+        <>
+          <div className="fixed inset-0 bg-black/30 z-50" onClick={() => setShowReturnModal(false)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <h3 className="text-base font-medium text-gray-900 mb-2">Return to reviewer</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Explain what needs adjusting. The reviewer will see this feedback when they reopen the job.
+              </p>
+              <textarea
+                value={returnFeedback}
+                onChange={e => setReturnFeedback(e.target.value)}
+                placeholder="What needs adjusting? (min 20 characters)"
+                className="w-full border border-gray-200 rounded px-3 py-2 text-sm h-28 focus:outline-none focus:border-gray-400 mb-2"
+              />
+              <p className="text-xs text-gray-400 mb-4">{returnFeedback.length}/20 min characters</p>
+              {returnMutation.isError && <p className="text-sm text-red-600 mb-3">{(returnMutation.error as Error).message}</p>}
+              <div className="flex gap-3">
+                <button onClick={() => setShowReturnModal(false)} className="flex-1 border border-gray-200 rounded-lg py-2.5 text-sm hover:bg-gray-50">Cancel</button>
+                <button
+                  onClick={() => returnMutation.mutate()}
+                  disabled={returnFeedback.length < 20 || returnMutation.isPending}
+                  className="flex-1 bg-orange-600 text-white rounded-lg py-2.5 text-sm font-medium hover:bg-orange-700 disabled:opacity-50"
+                >
+                  {returnMutation.isPending ? 'Returning...' : 'Return for revision'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {/* DELIVERED: show final state */}
