@@ -3,12 +3,15 @@ import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { PortalNav } from '../../components/shared/PortalNav'
 import { useAuth } from '../../lib/auth'
 import { SalesDashboard } from './Dashboard'
+import { SalesLeads } from './Leads'
+import { LeadDetail } from './LeadDetail'
 import { SalesClients } from './Clients'
 import { SalesEarnings } from './Earnings'
 import { SalesSettings } from './Settings'
 
 const NAV_ITEMS = [
   { to: '/sales', label: 'Dashboard', end: true },
+  { to: '/sales/leads', label: 'Leads' },
   { to: '/sales/clients', label: 'My clients' },
   { to: '/sales/earnings', label: 'Earnings' },
   { to: '/sales/settings', label: 'Settings' },
@@ -48,6 +51,8 @@ export function SalesLayout() {
 
         <Routes>
           <Route index element={<SalesDashboard />} />
+          <Route path="leads" element={<SalesLeads />} />
+          <Route path="leads/:id" element={<LeadDetail />} />
           <Route path="clients" element={<SalesClients />} />
           <Route path="earnings" element={<SalesEarnings />} />
           <Route path="settings" element={<SalesSettings />} />
