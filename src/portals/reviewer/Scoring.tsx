@@ -175,9 +175,9 @@ export function ReviewerScoring() {
     <div className="space-y-6">
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <RainbowStripe height={3} />
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div>
               <span className="text-xs font-mono text-gray-400">{job.job_number}</span>
               <h3 className="font-medium text-gray-900 mt-1">{org?.name} — {job.content_type}</h3>
@@ -222,7 +222,7 @@ export function ReviewerScoring() {
           )}
 
           {/* File placeholder */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div className="border border-gray-100 rounded p-4">
               <p className="text-xs uppercase tracking-wide text-gray-500 font-medium mb-2">Source ({job.source_language})</p>
               <div className="flex items-center gap-2 text-gray-400">
@@ -262,7 +262,7 @@ export function ReviewerScoring() {
                       <button
                         key={n}
                         onClick={() => setScores(prev => ({ ...prev, [criterion.key]: n }))}
-                        className={`flex-1 h-3 rounded-full transition-all ${n <= value ? '' : 'bg-gray-100 hover:bg-gray-200'}`}
+                        className={`flex-1 h-6 sm:h-3 rounded-full transition-all ${n <= value ? '' : 'bg-gray-100 hover:bg-gray-200'}`}
                         style={n <= value ? { background: scoreColor(value) } : {}}
                         aria-label={`${criterion.label}: ${n}`}
                       />

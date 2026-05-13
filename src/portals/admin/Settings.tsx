@@ -217,7 +217,7 @@ export function AdminSettings() {
           {pricingEdit && (
             <div className="mt-6 pt-6 border-t border-gray-100">
               <h4 className="font-medium text-gray-900 mb-3">Other pricing</h4>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs uppercase tracking-wide text-gray-500 font-medium">Pay-as-you-go (pence/word)</label>
                   <input

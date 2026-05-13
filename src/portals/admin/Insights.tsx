@@ -136,7 +136,7 @@ export function AdminInsights() {
         <span className="text-xs text-gray-400">{filtered.length} delivered jobs</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* AI tool performance (hTER) */}
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <RainbowStripe height={3} />

@@ -53,7 +53,7 @@ export function ReviewerEarnings() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white border border-gray-200 rounded-lg animate-pulse" />)}
         </div>
       </div>
@@ -121,7 +121,7 @@ export function ReviewerEarnings() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           label="This month"
           value={`£${(thisMonthEarnings / 100).toLocaleString()}`}
@@ -160,7 +160,7 @@ export function ReviewerEarnings() {
           ) : (
             <div className="space-y-2">
               {buckets.map(b => (
-                <div key={b.key} className="grid grid-cols-5 gap-4 p-3 border border-gray-100 rounded items-center text-sm">
+                <div key={b.key} className="grid grid-cols-2 sm:grid-cols-5 gap-4 p-3 border border-gray-100 rounded items-center text-sm">
                   <span className="font-medium text-gray-900">{b.label}</span>
                   <span className="text-gray-600">{b.words.toLocaleString()} words</span>
                   <span className="text-gray-900 font-medium">£{(b.amountPence / 100).toLocaleString()}</span>

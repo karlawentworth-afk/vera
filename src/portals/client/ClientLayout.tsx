@@ -1,6 +1,6 @@
-import { NavLink, Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
-import { VeraLogo } from '../../components/shared/VeraLogo'
+import { PortalNav } from '../../components/shared/PortalNav'
 import { PlaceholderPage } from '../../components/shared/PlaceholderPage'
 import { useAuth } from '../../lib/auth'
 import { ClientDashboard } from './Dashboard'
@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { to: '/client', label: 'Dashboard', end: true },
   { to: '/client/submit', label: 'Submit work' },
   { to: '/client/jobs', label: 'My jobs' },
-  { to: '/client/audit', label: 'AI health & audit' },
+  { to: '/client/audit', label: 'AI health' },
   { to: '/client/subscription', label: 'Subscription' },
 ]
 
@@ -27,37 +27,21 @@ export function ClientLayout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <RainbowStripe height={4} />
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <VeraLogo size="sm" />
-            <nav className="flex gap-1">
-              {NAV_ITEMS.map(item => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.end}
-                  className={({ isActive }) =>
-                    `px-3 py-1.5 text-sm rounded ${isActive ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-gray-900'}`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </nav>
-          </div>
-          <div className="flex items-center gap-3">
+      <PortalNav
+        items={NAV_ITEMS}
+        rightContent={
+          <>
             <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
               {initials}
             </div>
-            <button onClick={signOut} className="text-xs text-gray-400 hover:text-gray-700">
+            <button onClick={signOut} className="hidden sm:inline text-xs text-gray-400 hover:text-gray-700">
               Sign out
             </button>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <Routes>
           <Route index element={<ClientDashboard />} />
           <Route path="audit" element={<ClientAudit />} />

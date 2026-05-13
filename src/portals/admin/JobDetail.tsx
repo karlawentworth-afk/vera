@@ -179,7 +179,7 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
       </div>
 
       {/* Details grid */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex items-start gap-3">
           <Globe className="w-4 h-4 text-gray-400 mt-0.5" />
           <div>

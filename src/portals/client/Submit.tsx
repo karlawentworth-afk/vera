@@ -180,7 +180,7 @@ export function ClientSubmit() {
         <h1 className="text-2xl font-light text-gray-900 mt-1">{org?.name}</h1>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Main form */}
         <div className="col-span-2 bg-white border border-gray-200 rounded-lg overflow-hidden">
           <RainbowStripe height={3} />
@@ -262,7 +262,7 @@ export function ClientSubmit() {
             )}
 
             {/* Language pair */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <div>
                 <label className="text-xs uppercase tracking-wide text-gray-500 font-medium">Source language</label>
                 <select value={sourceLang} onChange={e => setSourceLang(e.target.value)} className="mt-1 w-full border border-gray-200 rounded px-3 py-2 text-sm">

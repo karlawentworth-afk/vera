@@ -45,7 +45,7 @@ export function AdminClients() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[1,2,3].map(i => <div key={i} className="bg-white border border-gray-200 rounded-lg h-48 animate-pulse" />)}
       </div>
     )
@@ -92,7 +92,7 @@ export function AdminClients() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {subscriptions?.map(sub => {
           const org = sub.organisation as { id: string; name: string }
           const color = TIER_COLORS[sub.tier_name] ?? '#1FA1D6'

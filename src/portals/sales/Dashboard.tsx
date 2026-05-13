@@ -54,7 +54,7 @@ export function SalesDashboard() {
   })
 
   if (isLoading) {
-    return <div className="grid grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white border border-gray-200 rounded-lg animate-pulse" />)}</div>
+    return <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white border border-gray-200 rounded-lg animate-pulse" />)}</div>
   }
 
   const activeAgreements = agreements?.filter(a => a.status === 'active') ?? []
@@ -73,14 +73,14 @@ export function SalesDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard label="My clients" value={String(activeAgreements.length)} trend={`£${(totalMrr / 100).toLocaleString()} combined MRR`} color={COLORS.purple} />
         <MetricCard label="YTD earned" value={`£${(ytdPaid / 100).toLocaleString()}`} color={COLORS.green} />
         <MetricCard label="Owed this month" value={`£${(pendingAmount / 100).toLocaleString()}`} color={COLORS.orange} />
         <MetricCard label="Expiring soon" value={String(soon.length)} trend={soon.length > 0 ? 'Within 90 days' : 'All stable'} color={COLORS.cyan} />
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Client list */}
         <div className="col-span-2 bg-white border border-gray-200 rounded-lg overflow-hidden">
           <RainbowStripe height={3} />

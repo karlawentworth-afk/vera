@@ -27,8 +27,8 @@ export function Drawer({ open, onClose, title, children }: DrawerProps) {
         onClick={onClose}
       />
       {/* Drawer panel */}
-      <div className="fixed inset-y-0 right-0 z-50 w-full max-w-xl bg-white shadow-xl border-l border-gray-200 overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
+      <div className="fixed inset-0 sm:inset-y-0 sm:left-auto sm:right-0 z-50 w-full sm:max-w-xl bg-white shadow-xl sm:border-l border-gray-200 overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-4 sm:px-6 py-4 flex items-center justify-between z-10">
           {title && <h2 className="text-base font-medium text-gray-900">{title}</h2>}
           <button
             onClick={onClose}
@@ -38,7 +38,7 @@ export function Drawer({ open, onClose, title, children }: DrawerProps) {
             <X className="w-4 h-4 text-gray-500" />
           </button>
         </div>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {children}
         </div>
       </div>

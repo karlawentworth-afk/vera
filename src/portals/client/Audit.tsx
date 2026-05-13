@@ -59,7 +59,7 @@ export function ClientAudit() {
   })
 
   if (isLoading) {
-    return <div className="space-y-6"><div className="grid grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white border border-gray-200 rounded-lg animate-pulse" />)}</div></div>
+    return <div className="space-y-6"><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white border border-gray-200 rounded-lg animate-pulse" />)}</div></div>
   }
 
   // Score map: job_id → score
@@ -120,7 +120,7 @@ export function ClientAudit() {
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           label="Overall AI Health"
           value={healthScore !== null ? String(healthScore) : '—'}

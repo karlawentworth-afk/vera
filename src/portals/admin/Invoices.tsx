@@ -96,7 +96,7 @@ export function AdminInvoices() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Client invoices */}
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <div className="h-1" style={{ background: COLORS.green }} />

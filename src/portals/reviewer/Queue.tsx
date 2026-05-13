@@ -42,7 +42,7 @@ export function ReviewerQueue() {
   })
 
   if (isLoading) {
-    return <div className="space-y-4"><div className="grid grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white border border-gray-200 rounded-lg animate-pulse" />)}</div></div>
+    return <div className="space-y-4"><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white border border-gray-200 rounded-lg animate-pulse" />)}</div></div>
   }
 
   const activeCount = jobs?.length ?? 0
@@ -53,7 +53,7 @@ export function ReviewerQueue() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard label="Active jobs" value={String(activeCount)} trend={`${totalActiveWords.toLocaleString()} words`} color={COLORS.cyan} />
         <MetricCard label="Words this month" value={(totalActiveWords + completedWords).toLocaleString()} trend={`£${estimatedEarnings.toLocaleString()} est.`} color={COLORS.green} />
         <MetricCard label="Rate" value={`£${rate.toFixed(3)}`} unit="/word" color={COLORS.purple} />
@@ -79,23 +79,25 @@ export function ReviewerQueue() {
                   <Link
                     key={job.id}
                     to={`/reviewer/review/${job.id}`}
-                    className="grid grid-cols-12 gap-3 p-3 border border-gray-100 rounded hover:border-gray-300 transition items-center"
+                    className="block p-3 border border-gray-100 rounded hover:border-gray-300 transition"
                   >
-                    <span className="col-span-1 text-xs font-mono text-gray-400">{job.job_number}</span>
-                    <div className="col-span-3">
-                      <p className="text-sm font-medium text-gray-900">{org?.name}</p>
-                      <p className="text-xs text-gray-500">{job.content_type}</p>
+                    <div className="flex items-start justify-between mb-1">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{org?.name}</p>
+                        <p className="text-xs text-gray-500">{job.content_type}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={job.status} />
+                        <ChevronRight className="w-3 h-3 text-gray-400" />
+                      </div>
                     </div>
-                    <span className="col-span-1 text-sm">{job.source_language} → {job.target_language}</span>
-                    <span className="col-span-1 text-sm text-gray-600">{job.word_count.toLocaleString()}w</span>
-                    <span className="col-span-2 text-xs text-gray-500">
-                      {job.urgency === 'expedited' && <span className="mr-1 px-1.5 py-0.5 rounded" style={{ background: '#EE7C2420', color: '#EE7C24' }}>Express</span>}
-                    </span>
-                    <div className="col-span-2"><StatusBadge status={job.status} /></div>
-                    <span className="col-span-1 text-xs text-gray-500">Due {dueLabel}</span>
-                    <span className="col-span-1 text-xs font-medium text-gray-900 flex items-center justify-end">
-                      Open <ChevronRight className="w-3 h-3 ml-1" />
-                    </span>
+                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-500 flex-wrap">
+                      <span className="font-mono text-gray-400">{job.job_number}</span>
+                      <span>{job.source_language} → {job.target_language}</span>
+                      <span>{job.word_count.toLocaleString()}w</span>
+                      {job.urgency === 'expedited' && <span className="px-1.5 py-0.5 rounded" style={{ background: '#EE7C2420', color: '#EE7C24' }}>Express</span>}
+                      <span>Due {dueLabel}</span>
+                    </div>
                   </Link>
                 )
               })}

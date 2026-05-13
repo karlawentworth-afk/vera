@@ -52,7 +52,7 @@ export function AdminDashboard() {
   if (jobsLoading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1,2,3,4].map(i => <div key={i} className="bg-white border border-gray-200 rounded-lg p-4 h-24 animate-pulse" />)}
         </div>
       </div>
@@ -83,14 +83,14 @@ export function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard label="MRR" value={`£${(mrr / 100).toLocaleString()}`} trend={`${subscriptions?.length ?? 0} active subscriptions`} color={COLORS.green} />
         <MetricCard label="Active clients" value={String(subscriptions?.length ?? 0)} trend={`${nearAllowance.length} near allowance`} color={COLORS.cyan} />
         <MetricCard label="Jobs in flight" value={String(activeJobs.length)} trend={`${expedited.length} expedited, ${unallocated.length} unallocated`} color={COLORS.purple} />
         <MetricCard label="Reviewers" value={String(reviewers?.length ?? 0)} trend={`${reviewers?.filter(r => !reviewerJobCounts[r.id]).length ?? 0} free`} color={COLORS.pink} />
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Priorities */}
         <div className="col-span-2 bg-white border border-gray-200 rounded-lg overflow-hidden">
           <RainbowStripe height={3} />
