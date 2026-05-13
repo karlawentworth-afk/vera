@@ -8,7 +8,7 @@ import type { UserRole } from '../types/database'
 
 function roleToPath(role: UserRole): string {
   switch (role) {
-    case 'admin': return '/admin'
+    case 'admin': return '/portal-mode'
     case 'client': return '/client'
     case 'reviewer': return '/reviewer'
     case 'salesperson': return '/sales'
