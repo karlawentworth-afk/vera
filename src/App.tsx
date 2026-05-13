@@ -16,6 +16,7 @@ import { AdminJobs } from './portals/admin/Jobs'
 import { AdminClients } from './portals/admin/Clients'
 import { AdminReviewers } from './portals/admin/Reviewers'
 import { AdminSales } from './portals/admin/Sales'
+import { AdminQuotes } from './portals/admin/Quotes'
 import { AdminSettings } from './portals/admin/Settings'
 import { PlaceholderPage } from './components/shared/PlaceholderPage'
 
@@ -43,13 +44,7 @@ export default function App() {
               <Route path="clients" element={<AdminClients />} />
               <Route path="reviewers" element={<AdminReviewers />} />
               <Route path="sales" element={<AdminSales />} />
-              <Route path="quotes" element={
-                <PlaceholderPage
-                  title="Quotes"
-                  icon="file-text"
-                  items={['Create and send branded quotes to prospects', 'Convert accepted quotes into client organisations', 'Track pipeline value and conversion rates']}
-                />
-              } />
+              <Route path="quotes" element={<AdminQuotes />} />
               <Route path="invoices" element={
                 <PlaceholderPage
                   title="Invoices & Payouts"
