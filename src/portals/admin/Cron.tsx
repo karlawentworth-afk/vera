@@ -13,6 +13,7 @@ const JOBS = [
   { name: 'generate-client-invoices', label: 'Client Invoices', schedule: '1st of month 06:00 UTC', desc: 'Generate draft invoices for active subscriptions' },
   { name: 'bill-usage-charges', label: 'Bill Usage Charges', schedule: '1st of month 06:30 UTC', desc: 'Add overflow and expedited charges to invoices' },
   { name: 'check-allowance-warnings', label: 'Allowance Warnings', schedule: 'Daily 07:00 UTC', desc: 'Email clients approaching 90% of word allowance' },
+  { name: 'process-payouts', label: 'Process Payouts', schedule: '28th of month 09:00 UTC', desc: 'Transfer funds to reviewers and salespeople via Stripe Connect' },
 ]
 
 const COLORS = { green: '#0F8F4D', red: '#D9211E', orange: '#EE7C24', cyan: '#1FA1D6' }
@@ -67,6 +68,7 @@ export function AdminCron() {
   function getEndpoint(jobName: string): string {
     if (jobName === 'calculate-ai-health') return 'calculate-ai-health'
     if (jobName === 'generate-recommendations') return 'generate-recommendations'
+    if (jobName === 'process-payouts') return 'process-payouts'
     return 'run-cron-job'
   }
 

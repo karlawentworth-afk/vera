@@ -80,6 +80,18 @@ export default async (req: Request, _context: Context) => {
         console.log(`[stripe-webhook] invoice payment failed: ${inv.id}`)
         break
       }
+
+      case "account.updated": {
+        const account = event.data.object as Stripe.Account
+        if (account.charges_enabled && account.details_submitted) {
+          // Mark onboarding complete
+          await supabase.from("profiles").update({
+            stripe_onboarding_completed_at: new Date().toISOString(),
+          }).eq("stripe_account_id", account.id)
+          console.log(`[stripe-webhook] Connect account verified: ${account.id}`)
+        }
+        break
+      }
     }
   } catch (err) {
     console.error(`[stripe-webhook] error processing ${event.type}:`, err)

@@ -5,7 +5,7 @@ import { useAuth } from '../../lib/auth'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { MetricCard } from '../../components/shared/MetricCard'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, CreditCard } from 'lucide-react'
 
 const COLORS = { cyan: '#1FA1D6', green: '#0F8F4D', purple: '#8E2882', pink: '#E5187A' }
 
@@ -53,6 +53,19 @@ export function ReviewerQueue() {
 
   return (
     <div className="space-y-6">
+      {!profile?.stripe_onboarding_completed_at && (
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <CreditCard className="w-5 h-5 text-orange-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-900">Connect your bank account to receive payouts</p>
+              <p className="text-xs text-gray-500">You can still complete reviews — payouts will be held until connected.</p>
+            </div>
+          </div>
+          <Link to="/reviewer/settings" className="text-xs bg-gray-900 text-white rounded px-3 py-1.5 hover:bg-gray-800 shrink-0">Connect</Link>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard label="Active jobs" value={String(activeCount)} trend={`${totalActiveWords.toLocaleString()} words`} color={COLORS.cyan} />
         <MetricCard label="Words this month" value={(totalActiveWords + completedWords).toLocaleString()} trend={`£${estimatedEarnings.toLocaleString()} est.`} color={COLORS.green} />

@@ -17,6 +17,8 @@ interface Profile {
   onboarding_completed_at: string | null
   job_title: string | null
   invited_at: string | null
+  stripe_account_id: string | null
+  stripe_onboarding_completed_at: string | null
 }
 
 interface AuthContextType {

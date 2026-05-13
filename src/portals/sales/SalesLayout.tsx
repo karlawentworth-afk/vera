@@ -5,11 +5,13 @@ import { useAuth } from '../../lib/auth'
 import { SalesDashboard } from './Dashboard'
 import { SalesClients } from './Clients'
 import { SalesEarnings } from './Earnings'
+import { SalesSettings } from './Settings'
 
 const NAV_ITEMS = [
   { to: '/sales', label: 'Dashboard', end: true },
   { to: '/sales/clients', label: 'My clients' },
   { to: '/sales/earnings', label: 'Earnings' },
+  { to: '/sales/settings', label: 'Settings' },
 ]
 
 export function SalesLayout() {
@@ -48,6 +50,7 @@ export function SalesLayout() {
           <Route index element={<SalesDashboard />} />
           <Route path="clients" element={<SalesClients />} />
           <Route path="earnings" element={<SalesEarnings />} />
+          <Route path="settings" element={<SalesSettings />} />
         </Routes>
       </div>
     </div>
