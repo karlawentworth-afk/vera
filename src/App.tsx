@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './lib/auth'
 import { RequireAuth } from './lib/RequireAuth'
 import { LoginPage } from './pages/Login'
+import { DemoSwitcher } from './components/shared/DemoSwitcher'
 
 // Portal layouts
 import { AdminLayout } from './portals/admin/AdminLayout'
@@ -36,6 +37,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
+          <DemoSwitcher />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
 
