@@ -260,6 +260,62 @@ export function ReviewerScoring() {
             </div>
           </div>
 
+          {/* Pre-flight check */}
+          {job.preflight_data && (() => {
+            const pf = job.preflight_data as {
+              confidence_score?: number; summary?: string
+              glossary_violations?: { term: string; expected: string; severity: string }[]
+              risky_segments?: { description: string; reason: string; severity: string }[]
+              brand_voice_issues?: { description: string; severity: string }[]
+            }
+            const glossaryCount = pf.glossary_violations?.length ?? 0
+            const riskyCount = pf.risky_segments?.length ?? 0
+            const brandCount = pf.brand_voice_issues?.length ?? 0
+
+            return (
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <p className="text-xs uppercase tracking-wide text-gray-500 font-medium mb-2">Vera's pre-flight check</p>
+                <div className="flex items-center gap-4 mb-3 flex-wrap">
+                  <span className="text-sm font-medium text-gray-900">{pf.confidence_score ?? '?'}/10 confidence</span>
+                  <span className="text-xs text-gray-500">{glossaryCount} glossary issue{glossaryCount !== 1 ? 's' : ''}</span>
+                  <span className="text-xs text-gray-500">{riskyCount} risky segment{riskyCount !== 1 ? 's' : ''}</span>
+                  <span className="text-xs text-gray-500">{brandCount} brand voice note{brandCount !== 1 ? 's' : ''}</span>
+                </div>
+                {pf.summary && <p className="text-sm text-gray-700 mb-3">{pf.summary}</p>}
+                {glossaryCount > 0 && (
+                  <details className="text-xs mb-2">
+                    <summary className="text-gray-600 cursor-pointer hover:text-gray-900">Glossary issues ({glossaryCount})</summary>
+                    <div className="mt-1 space-y-1 pl-3">
+                      {pf.glossary_violations!.map((v, i) => (
+                        <div key={i}><span className="font-medium">"{v.term}"</span> — expected "{v.expected}" <span className={`px-1 rounded ${v.severity === 'high' ? 'bg-red-50 text-red-700' : 'bg-orange-50 text-orange-700'}`}>{v.severity}</span></div>
+                      ))}
+                    </div>
+                  </details>
+                )}
+                {riskyCount > 0 && (
+                  <details className="text-xs mb-2">
+                    <summary className="text-gray-600 cursor-pointer hover:text-gray-900">Risky segments ({riskyCount})</summary>
+                    <div className="mt-1 space-y-1 pl-3">
+                      {pf.risky_segments!.map((s, i) => (
+                        <div key={i}><span className="font-medium">{s.description}</span> — {s.reason} <span className={`px-1 rounded ${s.severity === 'high' ? 'bg-red-50 text-red-700' : 'bg-orange-50 text-orange-700'}`}>{s.severity}</span></div>
+                      ))}
+                    </div>
+                  </details>
+                )}
+                {brandCount > 0 && (
+                  <details className="text-xs">
+                    <summary className="text-gray-600 cursor-pointer hover:text-gray-900">Brand voice ({brandCount})</summary>
+                    <div className="mt-1 space-y-1 pl-3">
+                      {pf.brand_voice_issues!.map((b, i) => (
+                        <div key={i}>{b.description} <span className={`px-1 rounded ${b.severity === 'high' ? 'bg-red-50 text-red-700' : 'bg-orange-50 text-orange-700'}`}>{b.severity}</span></div>
+                      ))}
+                    </div>
+                  </details>
+                )}
+              </div>
+            )
+          })()}
+
           {/* Scoring */}
           <h4 className="font-medium text-gray-900 mb-4">Your scoring — rate 1-10 across each criterion</h4>
           <div className="space-y-4">
