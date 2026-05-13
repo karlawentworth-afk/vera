@@ -95,10 +95,29 @@ export function ClientDashboard() {
     )
   }
 
-  // Calculate health score from hTER scores
+  // Health snapshots — read from pre-calculated table
+  const { data: snapshots } = useQuery({
+    queryKey: ['health-snapshots', orgId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ai_health_snapshots')
+        .select('*')
+        .eq('organisation_id', orgId!)
+        .order('snapshot_date', { ascending: false })
+        .limit(6)
+      if (error) throw error
+      return data
+    },
+    enabled: !!orgId,
+  })
+
+  const latestSnapshot = snapshots?.[0]
+
+  // Fallback to live calculation if no snapshots exist yet
   const hterValues = scores?.map(s => Number(s.hter_score)) ?? []
-  const avgHter = hterValues.length > 0 ? hterValues.reduce((a, b) => a + b, 0) / hterValues.length : 0
-  const healthScore = hterValues.length > 0 ? Math.round((1 - avgHter) * 100) : null
+  const liveHealthScore = hterValues.length > 0 ? Math.round((1 - (hterValues.reduce((a, b) => a + b, 0) / hterValues.length)) * 100) : null
+  const healthScore = latestSnapshot?.overall_score ?? liveHealthScore
+  const prevScore = latestSnapshot?.prev_period_score ?? null
 
   // Words used
   const wordsUsed = jobs?.filter(j => j.status !== 'cancelled').reduce((sum, j) => sum + j.word_count, 0) ?? 0
@@ -113,24 +132,24 @@ export function ClientDashboard() {
   })
   const avgTurnaround = turnarounds.length > 0 ? Math.round(turnarounds.reduce((a, b) => a + b, 0) / turnarounds.length) : null
 
-  // Simulated 6-month trend (derive from scores with some variation for visual interest)
-  const baseScore = healthScore ?? 80
-  const monthTrend = [
-    Math.max(60, baseScore - 15),
-    Math.max(60, baseScore - 12),
-    Math.max(60, baseScore - 9),
-    Math.max(60, baseScore - 6),
-    Math.max(60, baseScore - 3),
-    baseScore,
-  ]
-  const monthLabels = (() => {
-    const now = new Date()
-    return Array.from({ length: 6 }, (_, i) => {
-      const d = new Date(now)
-      d.setMonth(d.getMonth() - (5 - i))
-      return d.toLocaleDateString('en-GB', { month: 'short' })
-    })
-  })()
+  // Trend from snapshots (oldest to newest for chart)
+  const snapshotsTrend = [...(snapshots ?? [])].reverse()
+  const monthTrend = snapshotsTrend.length > 0
+    ? snapshotsTrend.map(s => s.overall_score)
+    : (() => {
+        const base = healthScore ?? 80
+        return [base - 15, base - 12, base - 9, base - 6, base - 3, base].map(v => Math.max(60, v))
+      })()
+
+  const monthLabels = snapshotsTrend.length > 0
+    ? snapshotsTrend.map(s => new Date(s.snapshot_date).toLocaleDateString('en-GB', { month: 'short' }))
+    : (() => {
+        const now = new Date()
+        return Array.from({ length: 6 }, (_, i) => {
+          const d = new Date(now); d.setMonth(d.getMonth() - (5 - i))
+          return d.toLocaleDateString('en-GB', { month: 'short' })
+        })
+      })()
 
   // Recommendations from org record
   // Recommendations — prefer live AI-generated from table, fallback to hand-curated on org
@@ -169,7 +188,9 @@ export function ClientDashboard() {
           label="AI Health Score"
           value={healthScore !== null ? String(healthScore) : '—'}
           unit="/100"
-          trend={healthScore !== null ? `Based on ${hterValues.length} reviews` : 'No reviews yet'}
+          trend={prevScore !== null && healthScore !== null
+            ? `${healthScore >= prevScore ? '↑' : '↓'} ${Math.abs(healthScore - prevScore)} vs prior period`
+            : healthScore !== null ? `Based on ${hterValues.length} reviews` : 'No reviews yet'}
           color={COLORS.green}
         />
         <MetricCard

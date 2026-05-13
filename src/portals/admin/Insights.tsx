@@ -253,7 +253,61 @@ export function AdminInsights() {
       </div>
 
       {/* AI Recommendations generation */}
+      {/* Recalculate AI Health */}
+      <RecalculateHealth session={session} />
+
       <GenerateRecommendations session={session} generatingFor={generatingFor} setGeneratingFor={setGeneratingFor} genResult={genResult} setGenResult={setGenResult} />
+    </div>
+  )
+}
+
+// Recalculate AI Health for all orgs
+function RecalculateHealth({ session }: { session: { access_token: string } | null }) {
+  const [calculating, setCalculating] = useState(false)
+  const [result, setResult] = useState<string | null>(null)
+
+  async function recalculate() {
+    setCalculating(true)
+    setResult(null)
+    try {
+      const resp = await fetch('/.netlify/functions/calculate-ai-health', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({}),
+      })
+      const data = await resp.json()
+      if (!resp.ok) setResult(`Error: ${data.error}`)
+      else setResult(`Updated ${data.results?.length ?? 0} org snapshots`)
+    } catch (err) {
+      setResult(`Failed: ${err}`)
+    } finally {
+      setCalculating(false)
+    }
+  }
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <RainbowStripe height={3} />
+      <div className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-medium text-gray-900">AI Health Scores</h3>
+            <p className="text-sm text-gray-500 mt-0.5">Recalculate health snapshots for all client organisations. Runs automatically nightly.</p>
+          </div>
+          <button
+            onClick={recalculate}
+            disabled={calculating}
+            className="text-sm bg-gray-900 text-white rounded px-4 py-2 hover:bg-gray-800 disabled:opacity-50"
+          >
+            {calculating ? 'Calculating...' : 'Recalculate all'}
+          </button>
+        </div>
+        {result && (
+          <p className={`mt-3 text-sm px-3 py-2 rounded ${result.startsWith('Error') || result.startsWith('Failed') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+            {result}
+          </p>
+        )}
+      </div>
     </div>
   )
 }
