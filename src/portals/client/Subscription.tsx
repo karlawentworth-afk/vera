@@ -38,6 +38,27 @@ export function ClientSubscription() {
     enabled: !!orgId,
   })
 
+  const currentPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
+
+  const { data: usageCharges } = useQuery({
+    queryKey: ['client-usage-charges', orgId, currentPeriod],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('usage_charges')
+        .select('kind, amount_pence')
+        .eq('organisation_id', orgId!)
+        .eq('billing_period', currentPeriod)
+      if (error) throw error
+      return data
+    },
+    enabled: !!orgId,
+  })
+
+  const overflowTotal = usageCharges?.filter(c => c.kind === 'overflow').reduce((s, c) => s + c.amount_pence, 0) ?? 0
+  const expeditedTotal = usageCharges?.filter(c => c.kind === 'expedited').reduce((s, c) => s + c.amount_pence, 0) ?? 0
+  const subscriptionAmount = subscription?.monthly_price_pence ?? 0
+  const estimatedTotal = subscriptionAmount + overflowTotal + expeditedTotal
+
   const [portalLoading, setPortalLoading] = useState(false)
 
   async function openStripePortal() {
@@ -106,6 +127,34 @@ export function ClientSubscription() {
                  pct < 100 ? 'Approaching allowance. Consider overflow or tier upgrade.' :
                  'Allowance exceeded. Overflow rate applies.'}
               </p>
+            </div>
+          )}
+
+          {(overflowTotal > 0 || expeditedTotal > 0) && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-xs uppercase tracking-wide text-gray-500 font-medium mb-2">Estimated next invoice</p>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Subscription</span>
+                  <span>£{(subscriptionAmount / 100).toLocaleString()}</span>
+                </div>
+                {overflowTotal > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Overflow</span>
+                    <span>£{(overflowTotal / 100).toLocaleString()}</span>
+                  </div>
+                )}
+                {expeditedTotal > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Expedited</span>
+                    <span>£{(expeditedTotal / 100).toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between pt-2 border-t border-gray-100 font-medium">
+                  <span>Total</span>
+                  <span>£{(estimatedTotal / 100).toLocaleString()}</span>
+                </div>
+              </div>
             </div>
           )}
 

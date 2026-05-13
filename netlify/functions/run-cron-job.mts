@@ -227,10 +227,62 @@ async function checkAllowanceWarnings(): Promise<number> {
 // Handler
 // ============================================================
 
+async function billUsageCharges(): Promise<number> {
+  const now = new Date()
+  const priorMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const billingPeriod = `${priorMonth.getFullYear()}-${String(priorMonth.getMonth() + 1).padStart(2, '0')}`
+
+  // Get unbilled charges from prior month
+  const { data: charges } = await supabase
+    .from("usage_charges")
+    .select("id, organisation_id, kind, words, amount_pence")
+    .eq("billing_period", billingPeriod)
+    .eq("invoiced", false)
+
+  if (!charges || charges.length === 0) return 0
+
+  // Group by org
+  const byOrg: Record<string, typeof charges> = {}
+  charges.forEach(c => {
+    if (!byOrg[c.organisation_id]) byOrg[c.organisation_id] = []
+    byOrg[c.organisation_id].push(c)
+  })
+
+  let count = 0
+  for (const [orgId, orgCharges] of Object.entries(byOrg)) {
+    const overflowTotal = orgCharges.filter(c => c.kind === "overflow").reduce((s, c) => s + c.amount_pence, 0)
+    const expeditedTotal = orgCharges.filter(c => c.kind === "expedited").reduce((s, c) => s + c.amount_pence, 0)
+
+    // Update the invoice record if exists
+    const { data: invoice } = await supabase
+      .from("invoices")
+      .select("id")
+      .eq("organisation_id", orgId)
+      .eq("period_start", priorMonth.toISOString().split("T")[0])
+      .maybeSingle()
+
+    if (invoice) {
+      await supabase.from("invoices").update({
+        overflow_amount_pence: overflowTotal,
+        expedited_amount_pence: expeditedTotal,
+        total_amount_pence: overflowTotal + expeditedTotal, // subscription amount already set
+      }).eq("id", invoice.id)
+    }
+
+    // Mark as invoiced
+    const chargeIds = orgCharges.map(c => c.id)
+    await supabase.from("usage_charges").update({ invoiced: true }).in("id", chargeIds)
+    count += chargeIds.length
+  }
+
+  return count
+}
+
 const JOBS: Record<string, () => Promise<number>> = {
   "calculate-monthly-commissions": calculateMonthlyCommissions,
   "generate-reviewer-payouts": generateReviewerPayouts,
   "generate-client-invoices": generateClientInvoices,
+  "bill-usage-charges": billUsageCharges,
   "check-allowance-warnings": checkAllowanceWarnings,
 }
 

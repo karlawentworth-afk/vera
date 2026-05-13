@@ -11,6 +11,7 @@ const JOBS = [
   { name: 'calculate-monthly-commissions', label: 'Monthly Commissions', schedule: '1st of month 04:00 UTC', desc: 'Calculate recurring commission payouts for salespeople' },
   { name: 'generate-reviewer-payouts', label: 'Reviewer Payouts', schedule: '1st of month 05:00 UTC', desc: 'Generate payout records from delivered jobs' },
   { name: 'generate-client-invoices', label: 'Client Invoices', schedule: '1st of month 06:00 UTC', desc: 'Generate draft invoices for active subscriptions' },
+  { name: 'bill-usage-charges', label: 'Bill Usage Charges', schedule: '1st of month 06:30 UTC', desc: 'Add overflow and expedited charges to invoices' },
   { name: 'check-allowance-warnings', label: 'Allowance Warnings', schedule: 'Daily 07:00 UTC', desc: 'Email clients approaching 90% of word allowance' },
 ]
 

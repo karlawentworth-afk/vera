@@ -154,6 +154,40 @@ export function ClientSubmit() {
         details: { word_count: wc, urgency, content_type: contentType, overflow: wouldExceed },
       })
 
+      // Usage charges
+      const billingPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
+
+      if (wouldExceed && remaining !== null) {
+        const overflowWords = wc - Math.max(0, remaining)
+        if (overflowWords > 0) {
+          const overflowRate = subscription?.overflow_rate_pence ?? 8
+          await supabase.from('usage_charges').insert({
+            organisation_id: orgId,
+            subscription_id: subscription?.id,
+            kind: 'overflow',
+            job_id: job.id,
+            words: overflowWords,
+            rate_pence_per_word: overflowRate,
+            amount_pence: overflowWords * overflowRate,
+            billing_period: billingPeriod,
+          })
+        }
+      }
+
+      if (urgency === 'expedited') {
+        const expeditedRate = Math.round((subscription?.overflow_rate_pence ?? 8) * 0.5)
+        await supabase.from('usage_charges').insert({
+          organisation_id: orgId,
+          subscription_id: subscription?.id,
+          kind: 'expedited',
+          job_id: job.id,
+          words: wc,
+          rate_pence_per_word: expeditedRate,
+          amount_pence: wc * expeditedRate,
+          billing_period: billingPeriod,
+        })
+      }
+
       // Confirmation email to submitter
       if (profile?.email) {
         sendEmail({

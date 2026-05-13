@@ -54,8 +54,33 @@ export function AdminInvoices() {
     },
   })
 
+  const currentPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
+
+  const { data: usageCharges } = useQuery({
+    queryKey: ['admin-usage-charges', currentPeriod],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('usage_charges')
+        .select('organisation_id, kind, amount_pence')
+        .eq('billing_period', currentPeriod)
+        .eq('invoiced', false)
+      if (error) throw error
+      return data
+    },
+  })
+
+  // Per-org usage totals
+  const orgUsage: Record<string, { overflow: number; expedited: number }> = {}
+  usageCharges?.forEach(c => {
+    if (!orgUsage[c.organisation_id]) orgUsage[c.organisation_id] = { overflow: 0, expedited: 0 }
+    orgUsage[c.organisation_id][c.kind as 'overflow' | 'expedited'] += c.amount_pence
+  })
+
+  const totalUsageCharges = usageCharges?.reduce((s, c) => s + c.amount_pence, 0) ?? 0
+
   // Client invoices total
-  const clientTotal = subscriptions?.reduce((sum, s) => sum + s.monthly_price_pence, 0) ?? 0
+  const clientSubTotal = subscriptions?.reduce((sum, s) => sum + s.monthly_price_pence, 0) ?? 0
+  const clientTotal = clientSubTotal + totalUsageCharges
 
   // Reviewer payouts — sum words × rate for each reviewer
   const reviewerOwed: Record<string, number> = {}
@@ -114,12 +139,24 @@ export function AdminInvoices() {
             <p className="text-xs text-gray-500 mt-1">{subscriptions?.length ?? 0} invoices · sync to Xero on issue</p>
 
             <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
-              {subscriptions?.map(s => (
-                <div key={s.id} className="flex items-center justify-between text-sm">
-                  <span className="text-gray-700">{(s.organisation as { name: string })?.name}</span>
-                  <span className="font-medium">£{(s.monthly_price_pence / 100).toLocaleString()}</span>
-                </div>
-              ))}
+              {subscriptions?.map(s => {
+                const org = s.organisation as { name: string; id?: string }
+                const usage = orgUsage[s.organisation_id] ?? { overflow: 0, expedited: 0 }
+                const total = s.monthly_price_pence + usage.overflow + usage.expedited
+                return (
+                  <div key={s.id} className="flex items-center justify-between text-sm">
+                    <div>
+                      <span className="text-gray-700">{org?.name}</span>
+                      {(usage.overflow > 0 || usage.expedited > 0) && (
+                        <span className="text-xs text-gray-400 ml-2">
+                          +£{((usage.overflow + usage.expedited) / 100).toFixed(0)} usage
+                        </span>
+                      )}
+                    </div>
+                    <span className="font-medium">£{(total / 100).toLocaleString()}</span>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
