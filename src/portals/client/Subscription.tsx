@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { useClientOrgId } from '../../lib/useClientOrg'
@@ -36,6 +37,25 @@ export function ClientSubscription() {
     },
     enabled: !!orgId,
   })
+
+  const [portalLoading, setPortalLoading] = useState(false)
+
+  async function openStripePortal() {
+    if (!orgId) return
+    setPortalLoading(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const resp = await fetch('/.netlify/functions/stripe-portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ organisation_id: orgId }),
+      })
+      const data = await resp.json()
+      if (data.url) window.location.href = data.url
+      else alert(data.error || 'Could not open billing portal')
+    } catch { alert('Failed to open billing portal') }
+    finally { setPortalLoading(false) }
+  }
 
   if (!subscription || !tiers) {
     return <div className="bg-white border border-gray-200 rounded-lg h-64 animate-pulse" />
@@ -88,6 +108,14 @@ export function ClientSubscription() {
               </p>
             </div>
           )}
+
+          <button
+            onClick={openStripePortal}
+            disabled={portalLoading}
+            className="mt-4 text-sm border border-gray-200 rounded px-4 py-2 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {portalLoading ? 'Opening...' : 'Manage subscription & billing'}
+          </button>
         </div>
       </div>
 
