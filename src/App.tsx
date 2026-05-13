@@ -7,6 +7,7 @@ import { AuthCallback } from './pages/AuthCallback'
 import { PortalMode } from './pages/PortalMode'
 import { DemoPage } from './pages/Demo'
 import { DemoBanner } from './components/shared/DemoBanner'
+import { DemoModeProvider } from './lib/demoMode'
 
 // Portal layouts
 import { AdminLayout } from './portals/admin/AdminLayout'
@@ -46,6 +47,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
+        <DemoModeProvider>
           <DemoBanner />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -98,6 +100,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
+        </DemoModeProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

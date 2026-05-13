@@ -454,6 +454,23 @@ async function seed() {
   await supabase.from('email_log').insert(emailEntries)
   console.log(`  ${emailEntries.length} email log entries`)
 
+  // ---- MARK ALL AS DEMO ----
+  console.log('11. Marking all records is_demo=true')
+  const demoTables = [
+    'organisations', 'subscriptions', 'jobs', 'job_segments', 'scores', 'quotes',
+    'invoices', 'usage_charges', 'reviewer_payouts', 'commission_agreements',
+    'commission_payouts', 'recommendations', 'ai_health_snapshots', 'audit_log',
+    'email_log', 'glossary_entries', 'brand_voice_notes', 'cron_runs',
+  ]
+  for (const table of demoTables) {
+    await supabase.from(table).update({ is_demo: true }).eq('is_demo', false)
+  }
+  // Mark non-admin profiles as demo
+  await supabase.from('profiles').update({ is_demo: true }).neq('role', 'admin')
+  // Mark client orgs as demo (operator stays live)
+  await supabase.from('organisations').update({ is_demo: true }).eq('type', 'client')
+  console.log('  Done')
+
   console.log('\n=== Demo seed complete! ===')
   console.log(`${Object.keys(orgMap).length} clients, ${REVIEWERS.length} reviewers, ${SALESPEOPLE.length} salespeople, ${jobCount} jobs`)
 }

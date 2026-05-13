@@ -1,11 +1,14 @@
-import { Navigate, Link } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
+import { useDemoMode } from '../lib/demoMode'
 import { RainbowStripe } from '../components/shared/RainbowStripe'
 import { VeraLogo } from '../components/shared/VeraLogo'
 import { Monitor, Users } from 'lucide-react'
 
 export function PortalMode() {
   const { profile, loading } = useAuth()
+  const { setDemoMode } = useDemoMode()
+  const navigate = useNavigate()
 
   if (loading) {
     return <div className="min-h-screen bg-white flex items-center justify-center"><div className="animate-pulse text-gray-400 text-sm">Loading...</div></div>
@@ -25,8 +28,8 @@ export function PortalMode() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <Link
-            to="/admin"
+          <button
+            onClick={() => { setDemoMode(false); navigate('/admin') }}
             className="text-left bg-white border-2 border-gray-900 rounded-lg p-8 hover:bg-gray-50 transition group"
           >
             <div className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center mb-4">
@@ -39,10 +42,10 @@ export function PortalMode() {
             <p className="mt-4 text-sm font-medium text-gray-900 group-hover:underline">
               Enter as Emma &rarr;
             </p>
-          </Link>
+          </button>
 
-          <Link
-            to="/demo"
+          <button
+            onClick={() => { setDemoMode(true); navigate('/demo') }}
             className="text-left bg-white border border-gray-200 rounded-lg p-8 hover:border-gray-400 transition group overflow-hidden relative"
           >
             <div className="absolute top-0 left-0 right-0">
@@ -58,7 +61,7 @@ export function PortalMode() {
             <p className="mt-4 text-sm text-gray-600 group-hover:text-gray-900 group-hover:underline">
               Choose a user &rarr;
             </p>
-          </Link>
+          </button>
         </div>
       </div>
     </div>
