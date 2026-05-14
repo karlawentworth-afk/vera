@@ -35,6 +35,7 @@ import { AdminInvoices } from './portals/admin/Invoices'
 import { AdminSettings } from './portals/admin/Settings'
 import { AdminAuditLog } from './portals/admin/AuditLog'
 import { AdminXtrfMigrate } from './portals/admin/XtrfMigrate'
+import { AdminUsers } from './portals/admin/Users'
 import { AdminCron } from './portals/admin/Cron'
 import { AdminSystemReset } from './portals/admin/SystemReset'
 
@@ -66,6 +67,7 @@ export default function App() {
             <Route path="/admin" element={<RequireAuth allowedRoles={['admin']}><AdminLayout /></RequireAuth>}>
               <Route index element={<AdminDashboard />} />
               <Route path="jobs" element={<AdminJobs />} />
+              <Route path="users" element={<AdminUsers />} />
               <Route path="clients" element={<AdminClients />} />
               <Route path="clients/:id" element={<AdminClientDetail />} />
               <Route path="insights" element={<AdminInsights />} />

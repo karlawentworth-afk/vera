@@ -17,6 +17,7 @@ const NAV: NavItem[] = [
     { to: '/admin/cron', label: 'Scheduled jobs', icon: ClipboardList },
   ]},
   { label: 'People', icon: Users, children: [
+    { to: '/admin/users', label: 'All users', icon: Users },
     { to: '/admin/clients', label: 'Clients', icon: Users },
     { to: '/admin/reviewers', label: 'Reviewers', icon: Users },
     { to: '/admin/reviewer-invoices', label: 'Reviewer invoices', icon: Receipt },
