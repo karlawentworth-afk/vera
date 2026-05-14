@@ -34,6 +34,7 @@ import { AdminQuotes } from './portals/admin/Quotes'
 import { AdminInvoices } from './portals/admin/Invoices'
 import { AdminSettings } from './portals/admin/Settings'
 import { AdminAuditLog } from './portals/admin/AuditLog'
+import { AdminXtrfMigrate } from './portals/admin/XtrfMigrate'
 import { AdminCron } from './portals/admin/Cron'
 import { AdminSystemReset } from './portals/admin/SystemReset'
 
@@ -81,6 +82,7 @@ export default function App() {
               <Route path="audit-log" element={<AdminAuditLog />} />
               <Route path="cron" element={<AdminCron />} />
               <Route path="system-reset" element={<AdminSystemReset />} />
+              <Route path="migrate-from-xtrf" element={<AdminXtrfMigrate />} />
             </Route>
 
             {/* Client portal */}
