@@ -515,14 +515,30 @@ async function seed() {
   }
   console.log(`  ${leadCount} leads created`)
 
+  // ---- INTERNAL NOTES ----
+  console.log('12. Internal notes')
+  // Get a few job IDs for notes
+  const { data: recentJobs } = await supabase.from('jobs').select('id, job_number').order('submitted_at', { ascending: false }).limit(5)
+  if (recentJobs && recentJobs.length >= 3) {
+    const noteData = [
+      { job_id: recentJobs[0].id, author_id: adminId, body: `Client (Springshot) requested expedited — confirmed verbally with James, will absorb the 50% surcharge as goodwill given they introduced us to Lufthansa Cargo.`, is_pinned: true, is_demo: true },
+      { job_id: recentJobs[1].id, author_id: adminId, body: `Putting on hold — client legal review pending until Wednesday. Don't allocate yet.`, is_pinned: true, is_demo: true },
+      { job_id: recentJobs[0].id, author_id: revMap['Anna Müller'] ?? adminId, body: `This Japanese training content reuses much of the terminology from the previous delivery — worth a quick consistency check.`, is_pinned: false, is_demo: true },
+      { job_id: recentJobs[2].id, author_id: adminId, body: `@reviewer — client asked if we can include their new product name in the next glossary update. Adding 'Springshot Verify' as do-not-translate.`, is_pinned: false, is_demo: true },
+      { job_id: recentJobs[1].id, author_id: revMap['Pierre Laurent'] ?? adminId, body: `Brand voice consistently informal where client's style guide requires neutral-formal. Flagged three specific segments for Emma's review.`, is_pinned: false, is_demo: true },
+    ]
+    await supabase.from('job_internal_notes').insert(noteData)
+    console.log(`  ${noteData.length} internal notes created`)
+  }
+
   // ---- MARK ALL AS DEMO ----
-  console.log('12. Marking all records is_demo=true')
+  console.log('13. Marking all records is_demo=true')
   const demoTables = [
     'organisations', 'subscriptions', 'jobs', 'job_segments', 'scores', 'quotes',
     'invoices', 'usage_charges', 'reviewer_payouts', 'commission_agreements',
     'commission_payouts', 'recommendations', 'ai_health_snapshots', 'audit_log',
     'email_log', 'glossary_entries', 'brand_voice_notes', 'cron_runs',
-    'leads', 'lead_notes', 'lead_activities',
+    'leads', 'lead_notes', 'lead_activities', 'job_internal_notes',
   ]
   for (const table of demoTables) {
     await supabase.from(table).update({ is_demo: true }).eq('is_demo', false)

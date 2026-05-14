@@ -6,6 +6,7 @@ import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { SegmentEditor } from '../../components/shared/SegmentEditor'
 import { FileViewer } from '../../components/shared/FileViewer'
+import { InternalNotes } from '../../components/shared/InternalNotes'
 import { ArrowLeft, Globe, FileText, Clock, Zap, AlertTriangle } from 'lucide-react'
 
 const COLORS = { green: '#0F8F4D', cyan: '#1FA1D6', orange: '#EE7C24' }
@@ -148,6 +149,9 @@ export function ReviewerJobDetail() {
             </div>
           )}
         </div>
+
+          {/* Internal notes */}
+          <InternalNotes jobId={jobId!} />
 
         {/* Sidebar — client context */}
         <div className="space-y-4">

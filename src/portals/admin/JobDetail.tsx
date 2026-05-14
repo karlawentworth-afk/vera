@@ -6,6 +6,7 @@ import { useAuth } from '../../lib/auth'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { FileViewer } from '../../components/shared/FileViewer'
+import { InternalNotes } from '../../components/shared/InternalNotes'
 import { Clock, FileText, Globe, Zap, User, CheckCircle, AlertCircle } from 'lucide-react'
 import type { JobStatus } from '../../types/database'
 
@@ -322,6 +323,9 @@ export function JobDetail({ jobId, onClose }: JobDetailProps) {
           <FileViewer bucket="job-files" path={`${job.organisation_id}/${jobId}/delivered`} label="Verified translation" accent />
         )}
       </div>
+
+      {/* Internal notes */}
+      <InternalNotes jobId={jobId} />
 
       {/* Reviewer section */}
       <RainbowStripe height={2} />
