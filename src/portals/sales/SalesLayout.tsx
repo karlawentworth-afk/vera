@@ -33,9 +33,9 @@ export function SalesLayout() {
         badge={{ label: 'Sales', bg: '#8E288220', color: '#8E2882' }}
         rightContent={
           <>
-            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
+            <a href="/profile" className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium hover:ring-2 hover:ring-gray-300 transition" title="Profile">
               {initials}
-            </div>
+            </a>
             <button onClick={signOut} className="hidden sm:inline text-xs text-gray-400 hover:text-gray-700">
               Sign out
             </button>
