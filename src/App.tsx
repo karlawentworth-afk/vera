@@ -36,6 +36,7 @@ import { AdminSettings } from './portals/admin/Settings'
 import { AdminAuditLog } from './portals/admin/AuditLog'
 import { AdminXtrfMigrate } from './portals/admin/XtrfMigrate'
 import { AdminUsers } from './portals/admin/Users'
+import { AdminUserDetail } from './portals/admin/UserDetail'
 import { AdminCron } from './portals/admin/Cron'
 import { AdminSystemReset } from './portals/admin/SystemReset'
 
@@ -68,6 +69,7 @@ export default function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="jobs" element={<AdminJobs />} />
               <Route path="users" element={<AdminUsers />} />
+              <Route path="users/:id" element={<AdminUserDetail />} />
               <Route path="clients" element={<AdminClients />} />
               <Route path="clients/:id" element={<AdminClientDetail />} />
               <Route path="insights" element={<AdminInsights />} />

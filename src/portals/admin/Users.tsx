@@ -222,7 +222,7 @@ function UserRow({ profile: p, orgMap, getStatus }: { profile: Record<string, un
   const orgName = p.organisation_id ? orgMap[p.organisation_id as string] ?? '' : ''
 
   return (
-    <div onClick={() => window.location.href = `/profile`} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer">
+    <div onClick={() => window.location.href = `/admin/users/${p.id as string}`} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer">
       <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium shrink-0">{initials}</div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
