@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { MetricCard } from '../../components/shared/MetricCard'
@@ -19,6 +20,7 @@ export function ReviewerQueue() {
         .from('jobs')
         .select('*, organisation:organisations(name)')
         .eq('reviewer_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .in('status', ['allocated', 'in_review', 'awaiting_signoff'])
         .order('due_at', { ascending: true })
       if (error) throw error
@@ -34,6 +36,7 @@ export function ReviewerQueue() {
         .from('jobs')
         .select('word_count')
         .eq('reviewer_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .eq('status', 'delivered')
       if (error) throw error
       return data

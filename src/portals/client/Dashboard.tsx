@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useClientOrgId } from '../../lib/useClientOrg'
 import { MetricCard } from '../../components/shared/MetricCard'
 import { StatusBadge } from '../../components/shared/StatusBadge'
@@ -19,6 +20,7 @@ export function ClientDashboard() {
         .from('organisations')
         .select('*')
         .eq('id', orgId!)
+        .eq('is_demo', getIsDemo())
         .single()
       if (error) throw error
       return data
@@ -34,6 +36,7 @@ export function ClientDashboard() {
         .select('*')
         .eq('organisation_id', orgId!)
         .eq('status', 'active')
+        .eq('is_demo', getIsDemo())
         .single()
       if (error) throw error
       return data
@@ -48,6 +51,7 @@ export function ClientDashboard() {
         .from('jobs')
         .select('id, word_count, status, submitted_at, delivered_at, urgency, content_type, source_language, target_language, reviewer_id, organisation_id')
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .order('submitted_at', { ascending: false })
       if (error) throw error
       return data
@@ -64,6 +68,7 @@ export function ClientDashboard() {
         .from('scores')
         .select('*')
         .in('job_id', jobIds)
+        .eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },
@@ -77,6 +82,7 @@ export function ClientDashboard() {
         .from('jobs')
         .select('*, reviewer:profiles!jobs_reviewer_id_fkey(full_name)')
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .in('status', ['unallocated', 'allocated', 'in_review', 'awaiting_signoff'])
         .order('due_at', { ascending: true })
       if (error) throw error
@@ -93,6 +99,7 @@ export function ClientDashboard() {
         .from('ai_health_snapshots')
         .select('*')
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .order('snapshot_date', { ascending: false })
         .limit(6)
       if (error) throw error
@@ -109,6 +116,7 @@ export function ClientDashboard() {
         .from('recommendations')
         .select('*')
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .is('dismissed_at', null)
         .order('generated_at', { ascending: false })
         .limit(5)

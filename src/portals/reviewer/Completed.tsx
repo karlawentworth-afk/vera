@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 
@@ -15,6 +16,7 @@ export function ReviewerCompleted() {
         .from('jobs')
         .select('id, job_number, word_count, delivered_at, content_type, source_language, target_language, organisation:organisations(name)')
         .eq('reviewer_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .eq('status', 'delivered')
         .order('delivered_at', { ascending: false })
       if (error) throw error
@@ -28,7 +30,7 @@ export function ReviewerCompleted() {
     queryFn: async () => {
       const ids = jobs?.map(j => j.id) ?? []
       if (ids.length === 0) return []
-      const { data, error } = await supabase.from('scores').select('job_id, hter_score').in('job_id', ids)
+      const { data, error } = await supabase.from('scores').select('job_id, hter_score').in('job_id', ids).eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },

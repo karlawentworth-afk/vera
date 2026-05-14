@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useClientOrgId } from '../../lib/useClientOrg'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { ChevronDown, ChevronRight } from 'lucide-react'
@@ -16,7 +17,7 @@ export function ClientAuditLog() {
   const { data: jobIds } = useQuery({
     queryKey: ['client-job-ids', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('jobs').select('id').eq('organisation_id', orgId!)
+      const { data, error } = await supabase.from('jobs').select('id').eq('organisation_id', orgId!).eq('is_demo', getIsDemo())
       if (error) throw error
       return data.map(j => j.id)
     },
@@ -32,6 +33,7 @@ export function ClientAuditLog() {
         .select('*, actor:profiles!audit_log_actor_id_fkey(full_name, role)', { count: 'exact' })
         .eq('entity_type', 'job')
         .in('entity_id', jobIds)
+        .eq('is_demo', getIsDemo())
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
       if (error) throw error

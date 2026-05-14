@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 
@@ -13,6 +14,7 @@ export function SalesClients() {
         .from('commission_agreements')
         .select('*, organisation:organisations(name)')
         .eq('salesperson_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .order('created_at', { ascending: false })
       if (error) throw error
       return data
@@ -25,7 +27,7 @@ export function SalesClients() {
     queryFn: async () => {
       const orgIds = agreements?.map(a => a.organisation_id) ?? []
       if (orgIds.length === 0) return []
-      const { data, error } = await supabase.from('subscriptions').select('organisation_id, tier_name, monthly_price_pence, status').in('organisation_id', orgIds)
+      const { data, error } = await supabase.from('subscriptions').select('organisation_id, tier_name, monthly_price_pence, status').in('organisation_id', orgIds).eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },

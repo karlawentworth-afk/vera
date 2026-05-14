@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { useClientOrgId } from '../../lib/useClientOrg'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -39,7 +40,7 @@ export function ClientSubmit() {
   const { data: org } = useQuery({
     queryKey: ['submit-org', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('organisations').select('name').eq('id', orgId!).single()
+      const { data, error } = await supabase.from('organisations').select('name').eq('id', orgId!).eq('is_demo', getIsDemo()).single()
       if (error) throw error
       return data
     },
@@ -49,7 +50,7 @@ export function ClientSubmit() {
   const { data: subscription } = useQuery({
     queryKey: ['submit-subscription', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('subscriptions').select('*').eq('organisation_id', orgId!).eq('status', 'active').single()
+      const { data, error } = await supabase.from('subscriptions').select('*').eq('organisation_id', orgId!).eq('status', 'active').eq('is_demo', getIsDemo()).single()
       if (error) throw error
       return data
     },
@@ -63,6 +64,7 @@ export function ClientSubmit() {
         .from('jobs')
         .select('word_count')
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .neq('status', 'cancelled')
       if (error) throw error
       return data.reduce((sum: number, j: { word_count: number }) => sum + j.word_count, 0) as number

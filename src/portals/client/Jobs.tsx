@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useClientOrgId } from '../../lib/useClientOrg'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -14,7 +15,7 @@ export function ClientJobs() {
   const { data: org } = useQuery({
     queryKey: ['client-org-name', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('organisations').select('name').eq('id', orgId!).single()
+      const { data, error } = await supabase.from('organisations').select('name').eq('id', orgId!).eq('is_demo', getIsDemo()).single()
       if (error) throw error
       return data
     },
@@ -28,6 +29,7 @@ export function ClientJobs() {
         .from('jobs')
         .select('*, reviewer:profiles!jobs_reviewer_id_fkey(full_name)')
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .order('submitted_at', { ascending: false })
       if (error) throw error
       return data
@@ -40,7 +42,7 @@ export function ClientJobs() {
     queryFn: async () => {
       const ids = jobs?.map(j => j.id) ?? []
       if (ids.length === 0) return []
-      const { data, error } = await supabase.from('scores').select('job_id, hter_score').in('job_id', ids)
+      const { data, error } = await supabase.from('scores').select('job_id, hter_score').in('job_id', ids).eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },

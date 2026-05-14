@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { useClientOrgId } from '../../lib/useClientOrg'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -23,6 +24,7 @@ export function ClientGlossary() {
         .from('glossary_entries')
         .select('*')
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .order('source_term')
       if (error) throw error
       return data
@@ -38,6 +40,7 @@ export function ClientGlossary() {
         .from('brand_voice_notes')
         .select('*')
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .maybeSingle()
       if (error) throw error
       return data

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { MetricCard } from '../../components/shared/MetricCard'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -16,6 +17,7 @@ export function SalesDashboard() {
         .from('commission_agreements')
         .select('*, organisation:organisations(name)')
         .eq('salesperson_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .order('created_at', { ascending: false })
       if (error) throw error
       return data
@@ -30,6 +32,7 @@ export function SalesDashboard() {
         .from('commission_payouts')
         .select('*')
         .eq('salesperson_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .order('created_at', { ascending: false })
       if (error) throw error
       return data
@@ -47,6 +50,7 @@ export function SalesDashboard() {
         .select('organisation_id, monthly_price_pence, status')
         .in('organisation_id', orgIds)
         .eq('status', 'active')
+        .eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },

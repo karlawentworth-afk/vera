@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Drawer } from '../../components/shared/Drawer'
@@ -27,7 +28,7 @@ export function ReviewerInvoices() {
   const { data: invoices, isLoading } = useQuery({
     queryKey: ['reviewer-invoices', profile?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('reviewer_invoices').select('*').eq('reviewer_id', profile!.id).order('created_at', { ascending: false })
+      const { data, error } = await supabase.from('reviewer_invoices').select('*').eq('reviewer_id', profile!.id).eq('is_demo', getIsDemo()).order('created_at', { ascending: false })
       if (error) throw error
       return data
     },
@@ -116,6 +117,7 @@ function CreateInvoiceForm({ profileId, rate, onCreated }: { profileId: string; 
       const { data: jobs, error } = await supabase.from('jobs')
         .select('id, job_number, word_count, content_type, source_language, target_language, delivered_at, organisation:organisations(name)')
         .eq('reviewer_id', profileId).eq('status', 'delivered')
+        .eq('is_demo', getIsDemo())
         .gte('delivered_at', lastMonthStart.toISOString())
         .lt('delivered_at', lastMonthEnd.toISOString())
       if (error) throw error

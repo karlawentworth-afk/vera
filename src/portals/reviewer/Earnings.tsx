@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { MetricCard } from '../../components/shared/MetricCard'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -27,6 +28,7 @@ export function ReviewerEarnings() {
         .from('jobs')
         .select('id, word_count, delivered_at')
         .eq('reviewer_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .eq('status', 'delivered')
         .order('delivered_at', { ascending: false })
       if (error) throw error
@@ -43,6 +45,7 @@ export function ReviewerEarnings() {
         .from('jobs')
         .select('word_count')
         .eq('reviewer_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .in('status', ['in_review', 'awaiting_signoff', 'allocated'])
       if (error) throw error
       return data

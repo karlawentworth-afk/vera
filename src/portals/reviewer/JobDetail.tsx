@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -18,7 +19,7 @@ export function ReviewerJobDetail() {
   const { data: job, isLoading } = useQuery({
     queryKey: ['reviewer-job-detail', jobId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('jobs').select('*, organisation:organisations(name, id)').eq('id', jobId!).single()
+      const { data, error } = await supabase.from('jobs').select('*, organisation:organisations(name, id)').eq('id', jobId!).eq('is_demo', getIsDemo()).single()
       if (error) throw error
       return data
     },
@@ -30,7 +31,7 @@ export function ReviewerJobDetail() {
     queryFn: async () => {
       const orgId = (job?.organisation as { id: string })?.id
       if (!orgId) return []
-      const { data, error } = await supabase.from('glossary_entries').select('source_term, preferred_translation, target_language').eq('organisation_id', orgId).eq('target_language', job!.target_language)
+      const { data, error } = await supabase.from('glossary_entries').select('source_term, preferred_translation, target_language').eq('organisation_id', orgId).eq('target_language', job!.target_language).eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },
@@ -42,7 +43,7 @@ export function ReviewerJobDetail() {
     queryFn: async () => {
       const orgId = (job?.organisation as { id: string })?.id
       if (!orgId) return null
-      const { data, error } = await supabase.from('brand_voice_notes').select('guidelines, tone_descriptors, forbidden_phrases').eq('organisation_id', orgId).maybeSingle()
+      const { data, error } = await supabase.from('brand_voice_notes').select('guidelines, tone_descriptors, forbidden_phrases').eq('organisation_id', orgId).eq('is_demo', getIsDemo()).maybeSingle()
       if (error) return null
       return data
     },
@@ -52,7 +53,7 @@ export function ReviewerJobDetail() {
   const { data: score } = useQuery({
     queryKey: ['reviewer-job-score', jobId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('scores').select('*').eq('job_id', jobId!).eq('reviewer_id', profile!.id).maybeSingle()
+      const { data, error } = await supabase.from('scores').select('*').eq('job_id', jobId!).eq('reviewer_id', profile!.id).eq('is_demo', getIsDemo()).maybeSingle()
       if (error) throw error
       return data
     },

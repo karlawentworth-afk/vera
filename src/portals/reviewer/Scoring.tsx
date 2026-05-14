@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -56,6 +57,7 @@ export function ReviewerScoring() {
         .from('jobs')
         .select('*, organisation:organisations(name)')
         .eq('id', jobId!)
+        .eq('is_demo', getIsDemo())
         .single()
       if (error) throw error
       return data
@@ -72,6 +74,7 @@ export function ReviewerScoring() {
         .select('*')
         .eq('job_id', jobId!)
         .eq('reviewer_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .maybeSingle()
       if (error) throw error
       if (data) {

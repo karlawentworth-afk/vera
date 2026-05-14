@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useClientOrgId } from '../../lib/useClientOrg'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -22,6 +23,7 @@ export function ClientJobDetail() {
         .select('*, reviewer:profiles!jobs_reviewer_id_fkey(full_name, specialism, languages)')
         .eq('id', jobId!)
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .single()
       if (error) throw error
       return data
@@ -32,7 +34,7 @@ export function ClientJobDetail() {
   const { data: score } = useQuery({
     queryKey: ['client-job-score', jobId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('scores').select('*').eq('job_id', jobId!).maybeSingle()
+      const { data, error } = await supabase.from('scores').select('*').eq('job_id', jobId!).eq('is_demo', getIsDemo()).maybeSingle()
       if (error) throw error
       return data
     },
@@ -47,6 +49,7 @@ export function ClientJobDetail() {
         .select('*, actor:profiles!audit_log_actor_id_fkey(full_name)')
         .eq('entity_type', 'job')
         .eq('entity_id', jobId!)
+        .eq('is_demo', getIsDemo())
         .order('created_at')
       if (error) throw error
       return data

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { MetricCard } from '../../components/shared/MetricCard'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -16,6 +17,7 @@ export function SalesEarnings() {
         .from('commission_payouts')
         .select('*')
         .eq('salesperson_id', profile!.id)
+        .eq('is_demo', getIsDemo())
         .order('period_start', { ascending: false })
       if (error) throw error
       return data
@@ -31,6 +33,7 @@ export function SalesEarnings() {
         .select('id, organisation_id, recurring_commission_pct, status, organisation:organisations(name)')
         .eq('salesperson_id', profile!.id)
         .eq('status', 'active')
+        .eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },
@@ -42,7 +45,7 @@ export function SalesEarnings() {
     queryFn: async () => {
       const orgIds = agreements?.map(a => a.organisation_id) ?? []
       if (orgIds.length === 0) return []
-      const { data, error } = await supabase.from('subscriptions').select('organisation_id, monthly_price_pence').in('organisation_id', orgIds).eq('status', 'active')
+      const { data, error } = await supabase.from('subscriptions').select('organisation_id, monthly_price_pence').in('organisation_id', orgIds).eq('status', 'active').eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },

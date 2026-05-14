@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Drawer } from '../../components/shared/Drawer'
@@ -25,7 +26,7 @@ export function SalesLeads() {
   const { data: leads, isLoading } = useQuery({
     queryKey: ['leads', profile?.id, isAdmin],
     queryFn: async () => {
-      let query = supabase.from('leads').select('*').order('updated_at', { ascending: false })
+      let query = supabase.from('leads').select('*').eq('is_demo', getIsDemo()).order('updated_at', { ascending: false })
       if (!isAdmin) query = query.eq('owner_id', profile!.id)
       const { data, error } = await query
       if (error) throw error

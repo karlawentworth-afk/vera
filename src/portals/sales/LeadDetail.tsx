@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useAuth } from '../../lib/auth'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { ArrowLeft, Phone, Mail, MessageSquare, Calendar, Send } from 'lucide-react'
@@ -26,7 +27,7 @@ export function LeadDetail() {
   const { data: lead } = useQuery({
     queryKey: ['lead-detail', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('leads').select('*').eq('id', id!).single()
+      const { data, error } = await supabase.from('leads').select('*').eq('id', id!).eq('is_demo', getIsDemo()).single()
       if (error) throw error
       return data
     },
@@ -36,7 +37,7 @@ export function LeadDetail() {
   const { data: notes } = useQuery({
     queryKey: ['lead-notes', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('lead_notes').select('*, author:profiles!lead_notes_author_id_fkey(full_name)').eq('lead_id', id!).order('created_at', { ascending: false })
+      const { data, error } = await supabase.from('lead_notes').select('*, author:profiles!lead_notes_author_id_fkey(full_name)').eq('lead_id', id!).eq('is_demo', getIsDemo()).order('created_at', { ascending: false })
       if (error) throw error
       return data
     },
@@ -46,7 +47,7 @@ export function LeadDetail() {
   const { data: activities } = useQuery({
     queryKey: ['lead-activities', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('lead_activities').select('*').eq('lead_id', id!).order('occurred_at', { ascending: false })
+      const { data, error } = await supabase.from('lead_activities').select('*').eq('lead_id', id!).eq('is_demo', getIsDemo()).order('occurred_at', { ascending: false })
       if (error) throw error
       return data
     },

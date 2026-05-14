@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useClientOrgId } from '../../lib/useClientOrg'
 
 const COLORS = { cyan: '#1FA1D6', purple: '#8E2882', pink: '#E5187A', orange: '#EE7C24' }
@@ -12,7 +13,7 @@ export function ClientSubscription() {
   const { data: subscription } = useQuery({
     queryKey: ['client-sub', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('subscriptions').select('*').eq('organisation_id', orgId!).eq('status', 'active').single()
+      const { data, error } = await supabase.from('subscriptions').select('*').eq('organisation_id', orgId!).eq('status', 'active').eq('is_demo', getIsDemo()).single()
       if (error) throw error
       return data
     },
@@ -31,7 +32,7 @@ export function ClientSubscription() {
   const { data: usedWords } = useQuery({
     queryKey: ['client-sub-usage', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('jobs').select('word_count').eq('organisation_id', orgId!).neq('status', 'cancelled')
+      const { data, error } = await supabase.from('jobs').select('word_count').eq('organisation_id', orgId!).eq('is_demo', getIsDemo()).neq('status', 'cancelled')
       if (error) throw error
       return data.reduce((s: number, j: { word_count: number }) => s + j.word_count, 0) as number
     },
@@ -48,6 +49,7 @@ export function ClientSubscription() {
         .select('kind, amount_pence')
         .eq('organisation_id', orgId!)
         .eq('billing_period', currentPeriod)
+        .eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },

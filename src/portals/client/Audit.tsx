@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { useClientOrgId } from '../../lib/useClientOrg'
 import { RAINBOW } from '../../lib/constants'
 import { MetricCard } from '../../components/shared/MetricCard'
@@ -27,6 +28,7 @@ export function ClientAudit() {
         .from('jobs')
         .select('id, job_number, source_language, target_language, content_type, word_count, status, submitted_at, delivered_at, reviewer_id, ai_tool_used')
         .eq('organisation_id', orgId!)
+        .eq('is_demo', getIsDemo())
         .order('submitted_at', { ascending: false })
       if (error) throw error
       return data
@@ -43,6 +45,7 @@ export function ClientAudit() {
         .from('scores')
         .select('*, reviewer:profiles!scores_reviewer_id_fkey(full_name)')
         .in('job_id', jobIds)
+        .eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },
@@ -52,7 +55,7 @@ export function ClientAudit() {
   const { data: org } = useQuery({
     queryKey: ['client-org-name', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('organisations').select('name').eq('id', orgId!).single()
+      const { data, error } = await supabase.from('organisations').select('name').eq('id', orgId!).eq('is_demo', getIsDemo()).single()
       if (error) throw error
       return data
     },
