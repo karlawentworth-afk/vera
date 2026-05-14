@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { inviteUser } from '../../lib/invite'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Drawer } from '../../components/shared/Drawer'
@@ -19,6 +20,7 @@ export function AdminReviewers() {
         .from('profiles')
         .select('*')
         .eq('role', 'reviewer')
+        .eq('is_demo', getIsDemo())
         .order('full_name')
       if (error) throw error
       return data
@@ -31,6 +33,7 @@ export function AdminReviewers() {
       const { data, error } = await supabase
         .from('jobs')
         .select('reviewer_id, word_count, status')
+        .eq('is_demo', getIsDemo())
         .not('reviewer_id', 'is', null)
         .in('status', ['in_review', 'awaiting_signoff'])
       if (error) throw error
@@ -44,6 +47,7 @@ export function AdminReviewers() {
       const { data, error } = await supabase
         .from('jobs')
         .select('reviewer_id, word_count')
+        .eq('is_demo', getIsDemo())
         .eq('status', 'delivered')
       if (error) throw error
       return data
@@ -56,6 +60,7 @@ export function AdminReviewers() {
       const { data, error } = await supabase
         .from('scores')
         .select('reviewer_id, hter_score')
+        .eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },

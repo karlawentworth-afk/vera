@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Drawer } from '../../components/shared/Drawer'
@@ -31,6 +32,7 @@ export function AdminJobs() {
       const { data, error } = await supabase
         .from('jobs')
         .select('*, organisation:organisations(name), reviewer:profiles!jobs_reviewer_id_fkey(full_name, rate_per_word)')
+        .eq('is_demo', getIsDemo())
         .order('submitted_at', { ascending: false })
       if (error) throw error
       return data

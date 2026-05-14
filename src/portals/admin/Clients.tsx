@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { inviteUser, resendInvite } from '../../lib/invite'
 import { Drawer } from '../../components/shared/Drawer'
 import { Plus, Eye, MessageSquare, FileText, Send } from 'lucide-react'
@@ -22,6 +23,7 @@ export function AdminClients() {
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*, organisation:organisations(id, name)')
+        .eq('is_demo', getIsDemo())
         .eq('status', 'active')
       if (error) throw error
       return data
@@ -31,7 +33,7 @@ export function AdminClients() {
   const { data: jobs } = useQuery({
     queryKey: ['admin-jobs'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('jobs').select('organisation_id, word_count, status')
+      const { data, error } = await supabase.from('jobs').select('organisation_id, word_count, status').eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },
@@ -40,7 +42,7 @@ export function AdminClients() {
   const { data: scores } = useQuery({
     queryKey: ['admin-scores'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('scores').select('job_id, hter_score')
+      const { data, error } = await supabase.from('scores').select('job_id, hter_score').eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },
@@ -49,7 +51,7 @@ export function AdminClients() {
   const { data: allJobs } = useQuery({
     queryKey: ['admin-jobs-for-health'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('jobs').select('id, organisation_id')
+      const { data, error } = await supabase.from('jobs').select('id, organisation_id').eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },
@@ -59,7 +61,7 @@ export function AdminClients() {
   const { data: clientProfiles } = useQuery({
     queryKey: ['admin-client-profiles'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('profiles').select('id, email, full_name, organisation_id, onboarding_completed_at, invited_at, created_at').eq('role', 'client')
+      const { data, error } = await supabase.from('profiles').select('id, email, full_name, organisation_id, onboarding_completed_at, invited_at, created_at').eq('role', 'client').eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { MetricCard } from '../../components/shared/MetricCard'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
@@ -19,6 +20,7 @@ export function AdminDashboard() {
       const { data, error } = await supabase
         .from('jobs')
         .select('*, organisation:organisations(name), reviewer:profiles!jobs_reviewer_id_fkey(full_name)')
+        .eq('is_demo', getIsDemo())
         .order('submitted_at', { ascending: false })
       if (error) throw error
       return data
@@ -31,6 +33,7 @@ export function AdminDashboard() {
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*, organisation:organisations(name)')
+        .eq('is_demo', getIsDemo())
         .eq('status', 'active')
       if (error) throw error
       return data
@@ -44,6 +47,7 @@ export function AdminDashboard() {
         .from('profiles')
         .select('*')
         .eq('role', 'reviewer')
+        .eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },

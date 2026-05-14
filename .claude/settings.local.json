@@ -20,7 +20,13 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/login)",
       "Bash(curl *)",
       "Bash(ls *)",
-      "Bash(npx tsx *)"
+      "Bash(npx tsx *)",
+      "Bash(grep \"^ALTER TABLE.*ENABLE ROW LEVEL SECURITY\" \"C:\\\\Users\\\\karla\\\\OneDrive\\\\Desktop\\\\CleverMX\\\\ecls\\\\vera\\\\migrations\"/*.sql)",
+      "Bash(awk '{print $3}')",
+      "Bash(grep \"^CREATE TABLE\" \"C:\\\\Users\\\\karla\\\\OneDrive\\\\Desktop\\\\CleverMX\\\\ecls\\\\vera\\\\migrations\"/*.sql)",
+      "Bash(awk '{print $4}')",
+      "Bash(grep \"CREATE TABLE.*IF NOT EXISTS\" \"C:\\\\Users\\\\karla\\\\OneDrive\\\\Desktop\\\\CleverMX\\\\ecls\\\\vera\\\\migrations\"/*.sql)",
+      "Bash(awk '{print $1}')"
     ]
   }
 }

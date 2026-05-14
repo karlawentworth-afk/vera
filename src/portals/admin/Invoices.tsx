@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Send, CreditCard, Receipt, Download } from 'lucide-react'
 
@@ -12,6 +13,7 @@ export function AdminInvoices() {
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*, organisation:organisations(name)')
+        .eq('is_demo', getIsDemo())
         .eq('status', 'active')
       if (error) throw error
       return data
@@ -25,6 +27,7 @@ export function AdminInvoices() {
         .from('profiles')
         .select('id, full_name, rate_per_word')
         .eq('role', 'reviewer')
+        .eq('is_demo', getIsDemo())
       if (error) throw error
       return data
     },
@@ -36,6 +39,7 @@ export function AdminInvoices() {
       const { data, error } = await supabase
         .from('jobs')
         .select('reviewer_id, word_count')
+        .eq('is_demo', getIsDemo())
         .eq('status', 'delivered')
       if (error) throw error
       return data
@@ -48,6 +52,7 @@ export function AdminInvoices() {
       const { data, error } = await supabase
         .from('jobs')
         .select('reviewer_id, word_count')
+        .eq('is_demo', getIsDemo())
         .in('status', ['in_review', 'awaiting_signoff', 'allocated'])
       if (error) throw error
       return data
@@ -62,6 +67,7 @@ export function AdminInvoices() {
       const { data, error } = await supabase
         .from('usage_charges')
         .select('organisation_id, kind, amount_pence')
+        .eq('is_demo', getIsDemo())
         .eq('billing_period', currentPeriod)
         .eq('invoiced', false)
       if (error) throw error

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { inviteUser } from '../../lib/invite'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Drawer } from '../../components/shared/Drawer'
@@ -25,6 +26,7 @@ export function AdminSales() {
         .from('profiles')
         .select('*')
         .eq('role', 'salesperson')
+        .eq('is_demo', getIsDemo())
         .order('full_name')
       if (error) throw error
       return data
@@ -37,6 +39,7 @@ export function AdminSales() {
       const { data, error } = await supabase
         .from('commission_agreements')
         .select('*, organisation:organisations(name)')
+        .eq('is_demo', getIsDemo())
         .order('created_at', { ascending: false })
       if (error) throw error
       return data
@@ -49,6 +52,7 @@ export function AdminSales() {
       const { data, error } = await supabase
         .from('commission_payouts')
         .select('*')
+        .eq('is_demo', getIsDemo())
         .order('created_at', { ascending: false })
       if (error) throw error
       return data

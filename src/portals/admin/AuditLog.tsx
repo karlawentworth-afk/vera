@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { getIsDemo } from '../../lib/queryHelpers'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Download, ChevronDown, ChevronRight, Search } from 'lucide-react'
 import { generateAuditLogPdf } from '../../lib/pdf'
@@ -35,6 +36,7 @@ export function AdminAuditLog() {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, role')
+        .eq('is_demo', getIsDemo())
         .order('full_name')
       if (error) throw error
       return data
@@ -47,6 +49,7 @@ export function AdminAuditLog() {
       let query = supabase
         .from('audit_log')
         .select('*, actor:profiles!audit_log_actor_id_fkey(full_name, role)', { count: 'exact' })
+        .eq('is_demo', getIsDemo())
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
 
