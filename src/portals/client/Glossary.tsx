@@ -7,6 +7,7 @@ import { useClientOrgId } from '../../lib/useClientOrg'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { LANGUAGES } from '../../lib/constants'
 import { Plus, Trash2, Save } from 'lucide-react'
+import { TbxExportButton, TbxImportButton } from '../../components/shared/TranslationExports'
 
 export function ClientGlossary() {
   const queryClient = useQueryClient()
@@ -171,7 +172,11 @@ export function ClientGlossary() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-gray-400 mt-3">{entries?.length ?? 0} terms total</p>
+              <div className="flex items-center gap-2 mt-3">
+                <p className="text-xs text-gray-400 flex-1">{entries?.length ?? 0} terms total</p>
+                <TbxExportButton orgId={orgId!} orgName="Client" />
+                <TbxImportButton orgId={orgId!} onImported={() => queryClient.invalidateQueries({ queryKey: ['glossary'] })} />
+              </div>
             </div>
           </div>
 

@@ -12,7 +12,7 @@ import { AI_TOOLS, LANGUAGES, CONTENT_TYPES } from '../../lib/constants'
 import { sendEmail } from '../../lib/email'
 
 const COLORS = { purple: '#8E2882', orange: '#EE7C24' }
-const ACCEPTED_TYPES = ['.docx', '.xliff', '.txt', '.csv', '.pdf']
+const ACCEPTED_TYPES = ['.docx', '.xliff', '.xlf', '.txt', '.csv', '.pdf', '.tbx', '.tmx']
 
 function extractWordCountFromText(text: string): number {
   return text.split(/\s+/).filter(Boolean).length

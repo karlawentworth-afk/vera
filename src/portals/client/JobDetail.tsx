@@ -7,6 +7,7 @@ import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { SegmentDiffView } from '../../components/shared/SegmentDiffView'
 import { FileViewer } from '../../components/shared/FileViewer'
+import { XliffExportButton } from '../../components/shared/TranslationExports'
 import { ArrowLeft, Clock, CheckCircle, Globe, FileText } from 'lucide-react'
 
 const COLORS = { green: '#0F8F4D', cyan: '#1FA1D6', orange: '#EE7C24' }
@@ -201,6 +202,9 @@ export function ClientJobDetail() {
             <FileViewer bucket="job-files" path={`${job.organisation_id}/${jobId}/source`} label="Source file" />
             {job.status === 'delivered' && (
               <FileViewer bucket="job-files" path={`${job.organisation_id}/${jobId}/delivered`} label="Verified translation" accent />
+            )}
+            {job.status === 'delivered' && (
+              <XliffExportButton jobId={jobId!} jobRef={job.job_number} sourceLang={job.source_language} targetLang={job.target_language} contentType={job.content_type} />
             )}
           </div>
         </div>

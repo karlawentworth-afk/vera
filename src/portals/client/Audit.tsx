@@ -8,6 +8,7 @@ import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { Download, ChevronRight } from 'lucide-react'
 import { generateClientAuditPdf } from '../../lib/pdf'
+import { TmxExportButton } from '../../components/shared/TranslationExports'
 
 const COLORS = { green: '#0F8F4D', cyan: '#1FA1D6', purple: '#8E2882', orange: '#EE7C24' }
 
@@ -281,6 +282,7 @@ export function ClientAudit() {
             >
               <Download className="w-4 h-4" /> Export PDF
             </button>
+            <TmxExportButton orgId={orgId!} orgName={org?.name ?? 'Client'} />
           </div>
 
           {deliveredWithScores.length === 0 ? (
