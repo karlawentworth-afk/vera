@@ -5,8 +5,8 @@ import { useClientOrgId } from '../../lib/useClientOrg'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { SegmentDiffView } from '../../components/shared/SegmentDiffView'
-import { ArrowLeft, Clock, CheckCircle, Globe, FileText, Download } from 'lucide-react'
-import { downloadJobFile } from '../../lib/storage'
+import { FileViewer } from '../../components/shared/FileViewer'
+import { ArrowLeft, Clock, CheckCircle, Globe, FileText } from 'lucide-react'
 
 const COLORS = { green: '#0F8F4D', cyan: '#1FA1D6', orange: '#EE7C24' }
 
@@ -194,15 +194,10 @@ export function ClientJobDetail() {
             </div>
           )}
 
-          <div className="bg-white border border-gray-200 rounded-lg p-5 space-y-2">
-            <p className="text-xs uppercase tracking-wide text-gray-500 font-medium mb-3">Files</p>
-            <button onClick={() => downloadJobFile(job.organisation_id, jobId!, 'source')} className="w-full text-left text-sm flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-50">
-              <Download className="w-4 h-4 text-gray-400" /> Download source
-            </button>
+          <div className="space-y-2">
+            <FileViewer bucket="job-files" path={`${job.organisation_id}/${jobId}/source`} label="Source file" />
             {job.status === 'delivered' && (
-              <button onClick={() => downloadJobFile(job.organisation_id, jobId!, 'delivered')} className="w-full text-left text-sm flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-50 font-medium text-gray-900">
-                <Download className="w-4 h-4 text-green-600" /> Download verified version
-              </button>
+              <FileViewer bucket="job-files" path={`${job.organisation_id}/${jobId}/delivered`} label="Verified translation" accent />
             )}
           </div>
         </div>

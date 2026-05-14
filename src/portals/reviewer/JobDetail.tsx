@@ -5,6 +5,7 @@ import { useAuth } from '../../lib/auth'
 import { StatusBadge } from '../../components/shared/StatusBadge'
 import { RainbowStripe } from '../../components/shared/RainbowStripe'
 import { SegmentEditor } from '../../components/shared/SegmentEditor'
+import { FileViewer } from '../../components/shared/FileViewer'
 import { ArrowLeft, Globe, FileText, Clock, Zap, AlertTriangle } from 'lucide-react'
 
 const COLORS = { green: '#0F8F4D', cyan: '#1FA1D6', orange: '#EE7C24' }
@@ -150,6 +151,9 @@ export function ReviewerJobDetail() {
 
         {/* Sidebar — client context */}
         <div className="space-y-4">
+          {/* Files */}
+          <FileViewer bucket="job-files" path={`${org.id}/${jobId}/source`} label="Source file" />
+
           <div className="bg-white border border-gray-200 rounded-lg p-5">
             <p className="text-xs uppercase tracking-wide text-gray-500 font-medium mb-3">Job details</p>
             <div className="space-y-2 text-sm">
