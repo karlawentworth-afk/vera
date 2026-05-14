@@ -24,9 +24,9 @@ export function AdminLayout() {
             <a href="/client" className="hidden lg:inline text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1">Client</a>
             <a href="/reviewer" className="hidden lg:inline text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1">Reviewer</a>
             <Bell className="w-4 h-4 text-gray-400 hidden sm:block" />
-            <div className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-medium">
+            <a href="/profile" className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-medium hover:ring-2 hover:ring-gray-400 transition" title="Profile">
               {initials}
-            </div>
+            </a>
             <button onClick={signOut} className="hidden sm:inline text-xs text-gray-400 hover:text-gray-700">
               Sign out
             </button>
