@@ -531,6 +531,7 @@ async function seed() {
   await supabase.from('profiles').update({ is_demo: true }).neq('role', 'admin')
   // Mark client orgs as demo (operator stays live)
   await supabase.from('organisations').update({ is_demo: true }).eq('type', 'client')
+  await supabase.from('organisations').update({ is_demo: false }).eq('type', 'operator')
   console.log('  Done')
 
   console.log('\n=== Demo seed complete! ===')
