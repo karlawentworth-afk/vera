@@ -14,7 +14,8 @@
     "seed-demo": "tsx scripts/seed-demo.ts",
     "seed-segments": "tsx scripts/seed-segments.ts",
     "seed-files": "tsx scripts/seed-files.ts",
-    "enrich-jobs": "tsx scripts/enrich-jobs.ts"
+    "enrich-jobs": "tsx scripts/enrich-jobs.ts",
+    "seed-help": "tsx scripts/seed-help.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.2",

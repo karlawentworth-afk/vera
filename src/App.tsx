@@ -9,6 +9,7 @@ import { DemoPage } from './pages/Demo'
 import { DemoBanner } from './components/shared/DemoBanner'
 import { DemoModeProvider } from './lib/demoMode'
 import { ProfilePage } from './pages/Profile'
+import { HelpPage } from './pages/Help'
 
 // Portal layouts
 import { AdminLayout } from './portals/admin/AdminLayout'
@@ -57,6 +58,7 @@ export default function App() {
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/portal-mode" element={<PortalMode />} />
             <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+            <Route path="/help" element={<RequireAuth><HelpPage /></RequireAuth>} />
             <Route path="/demo" element={<DemoPage />} />
 
             {/* Admin portal */}

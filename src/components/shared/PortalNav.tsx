@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, HelpCircle } from 'lucide-react'
 import { VeraLogo } from './VeraLogo'
 
 interface NavItem {
@@ -46,6 +46,9 @@ export function PortalNav({ items, badge, rightContent }: PortalNavProps) {
         </div>
 
         <div className="flex items-center gap-3">
+          <a href="/help" className="w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100" title="Help">
+            <HelpCircle className="w-4 h-4" />
+          </a>
           {rightContent}
           {/* Hamburger */}
           <button
