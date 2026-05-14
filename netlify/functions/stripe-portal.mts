@@ -16,6 +16,12 @@ export default async (req: Request, _context: Context) => {
 
   const body = await req.json() as { organisation_id: string }
 
+  // Verify caller belongs to this organisation or is admin
+  const { data: callerProfile } = await supabase.from("profiles").select("role, organisation_id").eq("id", user.id).single()
+  if (callerProfile?.role !== "admin" && callerProfile?.organisation_id !== body.organisation_id) {
+    return new Response(JSON.stringify({ error: "Access denied — you don't belong to this organisation" }), { status: 403 })
+  }
+
   const { data: org } = await supabase.from("organisations").select("stripe_customer_id").eq("id", body.organisation_id).single()
   if (!org?.stripe_customer_id) {
     return new Response(JSON.stringify({ error: "No Stripe customer linked to this organisation" }), { status: 400 })

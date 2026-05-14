@@ -16,6 +16,12 @@ export default async (req: Request, _context: Context) => {
 
   const body = await req.json() as { organisation_id: string; tier_name: string; subscription_id: string }
 
+  // Verify caller belongs to this organisation or is admin
+  const { data: callerProfile } = await supabase.from("profiles").select("role, organisation_id").eq("id", user.id).single()
+  if (callerProfile?.role !== "admin" && callerProfile?.organisation_id !== body.organisation_id) {
+    return new Response(JSON.stringify({ error: "Access denied — you don't belong to this organisation" }), { status: 403 })
+  }
+
   // Get tier with Stripe price
   const { data: tier } = await supabase.from("tier_config").select("stripe_price_id, name").eq("name", body.tier_name).single()
   if (!tier?.stripe_price_id) {

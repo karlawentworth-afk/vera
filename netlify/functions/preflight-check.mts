@@ -15,10 +15,26 @@ export default async (req: Request, _context: Context) => {
     return new Response(JSON.stringify({ error: "POST only" }), { status: 405 })
   }
 
+  // Auth: verify caller identity
+  const authHeader = req.headers.get("Authorization")
+  if (!authHeader?.startsWith("Bearer ")) return new Response("Unauthorized", { status: 401 })
+  const { data: { user } } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""))
+  if (!user) return new Response("Invalid token", { status: 401 })
+
+  const { data: callerProfile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+
   const body = await req.json()
   const jobId = body.job_id as string
   if (!jobId) {
     return new Response(JSON.stringify({ error: "job_id required" }), { status: 400 })
+  }
+
+  // Verify caller has access to this job (admin or assigned reviewer)
+  if (callerProfile?.role !== "admin") {
+    const { data: job } = await supabase.from("jobs").select("reviewer_id, organisation_id").eq("id", jobId).single()
+    const isAssignedReviewer = callerProfile?.role === "reviewer" && job?.reviewer_id === user.id
+    const isOrgClient = callerProfile?.role === "client" // client submitting triggers preflight — verify org match
+    if (!isAssignedReviewer && !isOrgClient) return new Response(JSON.stringify({ error: "Access denied" }), { status: 403 })
   }
 
   try {

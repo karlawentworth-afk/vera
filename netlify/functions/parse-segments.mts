@@ -34,8 +34,23 @@ function extractTextFromTxt(content: string): string[] {
 export default async (req: Request, _context: Context) => {
   if (req.method !== "POST") return new Response("POST only", { status: 405 })
 
+  // Auth: verify caller has access to this job
+  const authHeader = req.headers.get("Authorization")
+  if (!authHeader?.startsWith("Bearer ")) return new Response("Unauthorized", { status: 401 })
+  const { data: { user } } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""))
+  if (!user) return new Response("Invalid token", { status: 401 })
+
+  // Verify caller is admin or assigned reviewer for this job
+  const { data: callerProfile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+
   const body = await req.json() as { job_id: string }
   if (!body.job_id) return new Response(JSON.stringify({ error: "job_id required" }), { status: 400 })
+
+  if (callerProfile?.role !== "admin") {
+    // Non-admin: verify they're the assigned reviewer
+    const { data: job } = await supabase.from("jobs").select("reviewer_id").eq("id", body.job_id).single()
+    if (job?.reviewer_id !== user.id) return new Response(JSON.stringify({ error: "Access denied" }), { status: 403 })
+  }
 
   try {
     // Get job
