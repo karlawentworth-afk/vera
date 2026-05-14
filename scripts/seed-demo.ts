@@ -454,13 +454,75 @@ async function seed() {
   await supabase.from('email_log').insert(emailEntries)
   console.log(`  ${emailEntries.length} email log entries`)
 
+  // ---- LEADS ----
+  console.log('11. Leads')
+  // Get salesperson IDs
+  const { data: spProfiles } = await supabase.from('profiles').select('id, full_name').eq('role', 'salesperson')
+  const spIds = spProfiles?.map(p => p.id) ?? []
+
+  const leadData = [
+    // Karla's leads
+    { owner: 0, contact: 'Martijn de Vries', email: 'martijn@rotterdamlogistics.nl', company: 'Rotterdam Logistics BV', industry: 'Logistics', size: 'large', source: 'Event', stage: 'proposal_sent', value: 420000, next: 'Follow up on proposal', nextDate: 1 },
+    { owner: 0, contact: 'Fabienne Leclerc', email: 'fabienne@aeroportslyon.fr', company: 'Aéroports de Lyon', industry: 'Aviation', size: 'enterprise', source: 'Referral', stage: 'demo_booked', value: 650000, next: 'Prepare demo environment', nextDate: 3 },
+    { owner: 0, contact: 'Chen Wei', email: 'chen.wei@pacificshipping.hk', company: 'Pacific Shipping Corp', industry: 'Shipping', size: 'enterprise', source: 'LinkedIn', stage: 'contacted', value: 850000, next: 'Send intro deck', nextDate: 2 },
+    { owner: 0, contact: 'Sofia Andersson', email: 'sofia@nordicpharma.se', company: 'Nordic Pharma AB', industry: 'Pharma', size: 'medium', source: 'Cold outreach', stage: 'new', value: 350000 },
+    { owner: 0, contact: 'João Silva', email: 'joao@brasiltransport.br', company: 'Brasil Transport SA', industry: 'Logistics', size: 'large', source: 'Event', stage: 'won', value: 350000 },
+    { owner: 0, contact: 'Emma Fitzgerald', email: 'emma.f@dublintech.ie', company: 'Dublin Tech Solutions', industry: 'Technology', size: 'small', source: 'Website', stage: 'lost', value: 150000 },
+    // David's leads
+    { owner: 1, contact: 'Henrik Svensson', email: 'henrik@scandmotors.se', company: 'Scandinavian Motors', industry: 'Automotive', size: 'large', source: 'Referral', stage: 'negotiating', value: 350000, next: 'Final pricing discussion', nextDate: 2 },
+    { owner: 1, contact: 'Giulia Conti', email: 'giulia@farmaciacentrale.it', company: 'Farmacia Centrale', industry: 'Healthcare', size: 'medium', source: 'Event', stage: 'qualified', value: 150000, next: 'Schedule discovery call', nextDate: 5 },
+    { owner: 1, contact: 'Alexander Braun', email: 'alex@berlinfin.de', company: 'Berlin Finance Group', industry: 'Finance', size: 'large', source: 'LinkedIn', stage: 'demo_booked', value: 650000, next: 'Demo prep with tech team', nextDate: 1 },
+    { owner: 1, contact: 'Yuki Nakamura', email: 'yuki@tokyoretail.jp', company: 'Tokyo Retail Corp', industry: 'Retail', size: 'enterprise', source: 'Cold outreach', stage: 'contacted', value: 350000 },
+    { owner: 1, contact: 'Pierre Moreau', email: 'pierre@lyonfood.fr', company: 'Lyon Food Industries', industry: 'Food', size: 'medium', source: 'Referral', stage: 'lost', value: 350000 },
+    // Priya's leads
+    { owner: 2, contact: 'Maria Kowalska', email: 'maria@warsawretail.pl', company: 'Warsaw Retail Group', industry: 'Retail', size: 'large', source: 'Event', stage: 'proposal_sent', value: 350000, next: 'Awaiting board decision', nextDate: 7 },
+    { owner: 2, contact: 'Antonio Rossi', email: 'antonio@milanfashion.it', company: 'Milan Fashion House', industry: 'Fashion', size: 'medium', source: 'Referral', stage: 'qualified', value: 150000, next: 'Send case study', nextDate: 3 },
+    { owner: 2, contact: 'Lars Eriksen', email: 'lars@copenhagenenergy.dk', company: 'Copenhagen Energy AS', industry: 'Energy', size: 'large', source: 'LinkedIn', stage: 'new', value: 650000 },
+    { owner: 2, contact: 'Aisha Patel', email: 'aisha@mumbaihealth.in', company: 'Mumbai Health Tech', industry: 'Healthcare', size: 'medium', source: 'Website', stage: 'contacted', value: 150000, next: 'Follow up email', nextDate: 1 },
+    { owner: 2, contact: 'Thomas Weber', email: 'thomas@zurichinsurance.ch', company: 'Zurich Re Insurance', industry: 'Insurance', size: 'enterprise', source: 'Cold outreach', stage: 'won', value: 650000 },
+  ]
+
+  let leadCount = 0
+  for (const l of leadData) {
+    if (!spIds[l.owner]) continue
+    const nextDate = l.nextDate ? new Date(Date.now() + l.nextDate * 86400000).toISOString().split('T')[0] : null
+    const { data: lead } = await supabase.from('leads').insert({
+      reference: '', owner_id: spIds[l.owner], contact_name: l.contact,
+      contact_email: l.email, company_name: l.company, industry: l.industry,
+      company_size: l.size, source: l.source, stage: l.stage,
+      estimated_value_pence: l.value, next_action: l.next ?? null,
+      next_action_date: nextDate,
+      lost_reason: l.stage === 'lost' ? 'Budget constraints — revisit Q2' : null,
+    }).select('id').single()
+
+    if (lead) {
+      // Add some activities
+      await supabase.from('lead_activities').insert([
+        { lead_id: lead.id, type: 'note', summary: `Lead created from ${l.source}`, created_by: spIds[l.owner], occurred_at: daysAgo(rand(15, 60)) },
+        ...(l.stage !== 'new' ? [{ lead_id: lead.id, type: 'email' as const, summary: 'Sent intro email with Vera overview deck', created_by: spIds[l.owner], occurred_at: daysAgo(rand(10, 30)) }] : []),
+        ...(l.stage === 'demo_booked' || l.stage === 'proposal_sent' || l.stage === 'negotiating' || l.stage === 'won' ? [{ lead_id: lead.id, type: 'meeting' as const, summary: 'Discovery call — discussed AI translation governance needs', created_by: spIds[l.owner], occurred_at: daysAgo(rand(5, 15)) }] : []),
+        ...(l.stage === 'won' ? [{ lead_id: lead.id, type: 'stage_change' as const, summary: 'Deal won — contract signed', created_by: spIds[l.owner], occurred_at: daysAgo(rand(1, 5)) }] : []),
+      ])
+      // Add a note
+      await supabase.from('lead_notes').insert({
+        lead_id: lead.id, author_id: spIds[l.owner],
+        body: l.stage === 'won' ? 'Great outcome — they were impressed by the AI Health Score demo.' :
+              l.stage === 'lost' ? 'Budget frozen for this quarter. Keep warm for Q2 review.' :
+              `Good initial conversation. ${l.company} has ${l.size} translation volume, primarily ${l.industry} content. Interested in Vera's governance angle.`,
+      })
+      leadCount++
+    }
+  }
+  console.log(`  ${leadCount} leads created`)
+
   // ---- MARK ALL AS DEMO ----
-  console.log('11. Marking all records is_demo=true')
+  console.log('12. Marking all records is_demo=true')
   const demoTables = [
     'organisations', 'subscriptions', 'jobs', 'job_segments', 'scores', 'quotes',
     'invoices', 'usage_charges', 'reviewer_payouts', 'commission_agreements',
     'commission_payouts', 'recommendations', 'ai_health_snapshots', 'audit_log',
     'email_log', 'glossary_entries', 'brand_voice_notes', 'cron_runs',
+    'leads', 'lead_notes', 'lead_activities',
   ]
   for (const table of demoTables) {
     await supabase.from(table).update({ is_demo: true }).eq('is_demo', false)
