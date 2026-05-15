@@ -1,17 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import { RainbowStripe } from '../components/shared/RainbowStripe'
-import { Camera, Save, CheckCircle } from 'lucide-react'
+import { Camera, Save, CheckCircle, ArrowLeft } from 'lucide-react'
 import { NotificationPreferences } from '../components/shared/NotificationPreferences'
 
 const TIMEZONES = ['Europe/London', 'Europe/Berlin', 'Europe/Paris', 'Europe/Madrid', 'Europe/Rome', 'Europe/Warsaw', 'Europe/Stockholm', 'America/New_York', 'America/Chicago', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Shanghai']
 const RAINBOW = ['#E5187A', '#8E2882', '#1B4F9E', '#1FA1D6', '#0F8F4D', '#F4D31E', '#EE7C24', '#D9211E']
 
 function getAvatarUrl(profile: { avatar_path?: string | null; full_name: string; id: string }): string {
-  if (profile.avatar_path) {
-    // Will be a signed URL in production — for now use initials fallback
+  if (profile.avatar_path && profile.avatar_path.startsWith('http')) {
+    return profile.avatar_path
   }
   const initials = profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase()
   const color = RAINBOW[profile.id.charCodeAt(0) % RAINBOW.length].replace('#', '')
@@ -20,6 +21,7 @@ function getAvatarUrl(profile: { avatar_path?: string | null; full_name: string;
 
 export function ProfilePage() {
   const { profile } = useAuth()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -73,12 +75,20 @@ export function ProfilePage() {
     mutationFn: async (file: File) => {
       if (file.size > 2 * 1024 * 1024) throw new Error('Max 2MB')
       const ext = file.name.split('.').pop() ?? 'jpg'
-      const path = `avatars/${profile!.id}.${ext}`
+      const path = `${profile!.id}.${ext}`
 
-      const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+      // Try upload — if bucket doesn't exist, create it first
+      let { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+      if (error && (error.message.includes('Bucket not found') || error.message.includes('bucket'))) {
+        await supabase.storage.createBucket('avatars', { public: true })
+        const retry = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+        error = retry.error
+      }
       if (error) throw error
 
-      await supabase.from('profiles').update({ avatar_path: path }).eq('id', profile!.id)
+      // Get public URL
+      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
+      await supabase.from('profiles').update({ avatar_path: urlData.publicUrl }).eq('id', profile!.id)
     },
     onSuccess: () => queryClient.invalidateQueries(),
   })
@@ -96,6 +106,9 @@ export function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
+      <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900">
+        <ArrowLeft className="w-4 h-4" /> Back
+      </button>
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <RainbowStripe height={4} />
         <div className="p-6">

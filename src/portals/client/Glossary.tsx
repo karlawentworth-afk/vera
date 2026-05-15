@@ -69,6 +69,7 @@ export function ClientGlossary() {
       const { error } = await supabase.from('glossary_entries').insert({
         organisation_id: orgId!,
         ...newTerm,
+        is_demo: getIsDemo(),
       })
       if (error) throw error
       await supabase.from('audit_log').insert({ actor_id: profile!.id, action: 'glossary_entry_added', entity_type: 'glossary', entity_id: orgId!, details: { term: newTerm.source_term } })
@@ -96,7 +97,7 @@ export function ClientGlossary() {
         if (error) throw error
       } else {
         const { error } = await supabase.from('brand_voice_notes').insert({
-          organisation_id: orgId!, guidelines, tone_descriptors: tones, forbidden_phrases: forbidden,
+          organisation_id: orgId!, guidelines, tone_descriptors: tones, forbidden_phrases: forbidden, is_demo: getIsDemo(),
         })
         if (error) throw error
       }

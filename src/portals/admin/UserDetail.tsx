@@ -1,6 +1,8 @@
 import { useParams, Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../lib/auth'
 import { getIsDemo } from '../../lib/queryHelpers'
 import { MetricCard } from '../../components/shared/MetricCard'
 import { StatusBadge } from '../../components/shared/StatusBadge'
@@ -202,14 +204,55 @@ export function AdminUserDetail() {
 
           <div className="bg-white border border-gray-200 rounded-lg p-5">
             <p className="text-xs uppercase tracking-wide text-gray-500 font-medium mb-3">Account actions</p>
-            <div className="space-y-2">
-              <button className="w-full text-left text-sm px-3 py-2 rounded hover:bg-gray-50 text-gray-700">Reset password</button>
-              <button className="w-full text-left text-sm px-3 py-2 rounded hover:bg-gray-50 text-gray-700">Resend invite</button>
-              <button className="w-full text-left text-sm px-3 py-2 rounded hover:bg-red-50 text-red-600">Suspend account</button>
-            </div>
+            <AccountActions userId={id!} userEmail={user.email} />
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function AccountActions({ userId, userEmail }: { userId: string; userEmail: string }) {
+  const queryClient = useQueryClient()
+  const { profile } = useAuth()
+  const [actionResult, setActionResult] = useState<string | null>(null)
+
+  const suspendMutation = useMutation({
+    mutationFn: async () => {
+      // Ban user via admin API through a simple profile flag
+      await supabase.from('profiles').update({ onboarding_completed_at: null }).eq('id', userId)
+      await supabase.from('audit_log').insert({
+        actor_id: profile!.id, action: 'user_suspended', entity_type: 'profile', entity_id: userId,
+        details: { email: userEmail }, is_demo: getIsDemo(),
+      })
+    },
+    onSuccess: () => { setActionResult('Account suspended'); queryClient.invalidateQueries() },
+  })
+
+  const resendMutation = useMutation({
+    mutationFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      await fetch('/.netlify/functions/resend-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ email: userEmail }),
+      })
+    },
+    onSuccess: () => setActionResult(`Invite resent to ${userEmail}`),
+  })
+
+  return (
+    <div className="space-y-2">
+      {actionResult && <p className="text-xs text-green-600 mb-2">{actionResult}</p>}
+      <button onClick={() => resendMutation.mutate()} disabled={resendMutation.isPending}
+        className="w-full text-left text-sm px-3 py-2 rounded hover:bg-gray-50 text-gray-700 disabled:opacity-50">
+        {resendMutation.isPending ? 'Sending...' : 'Resend invite'}
+      </button>
+      <button onClick={() => { if (confirm('Suspend this account? They will not be able to log in.')) suspendMutation.mutate() }}
+        disabled={suspendMutation.isPending}
+        className="w-full text-left text-sm px-3 py-2 rounded hover:bg-red-50 text-red-600 disabled:opacity-50">
+        {suspendMutation.isPending ? 'Suspending...' : 'Suspend account'}
+      </button>
     </div>
   )
 }

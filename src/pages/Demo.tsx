@@ -124,8 +124,24 @@ export function DemoPage() {
           </Link>
           <div>
             <VeraLogo size="md" />
-            <p className="mt-1 text-sm text-gray-500">Demo mode — choose a user to log in as</p>
+            <p className="mt-1 text-sm text-gray-500">Demo mode — choose a user to log in as, or stay as yourself</p>
           </div>
+        </div>
+
+        {/* Stay as admin option */}
+        <div className="mb-6">
+          <button
+            onClick={() => { sessionStorage.setItem('vera_demo_mode', 'true'); window.location.href = '/admin' }}
+            className="w-full text-left bg-white border-2 border-gray-900 rounded-lg p-4 hover:bg-gray-50 transition"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-900">Continue as {profile?.full_name} (Admin)</p>
+                <p className="text-xs text-gray-500">View demo data from the admin dashboard without switching user</p>
+              </div>
+              <span className="text-xs px-2 py-0.5 rounded bg-gray-900 text-white">Recommended</span>
+            </div>
+          </button>
         </div>
 
         <div className="space-y-8">

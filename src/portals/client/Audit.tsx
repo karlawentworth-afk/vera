@@ -305,9 +305,9 @@ export function ClientAudit() {
                       {score ? Number(score.hter_score).toFixed(2) : '—'}
                     </span>
                     <span className="col-span-1"><StatusBadge status={job.status} /></span>
-                    <button className="col-span-1 text-xs text-gray-600 hover:text-gray-900 flex items-center justify-end">
-                      Record <ChevronRight className="w-3 h-3" />
-                    </button>
+                    <a href={`/client/jobs/${job.id}`} className="col-span-1 text-xs text-gray-600 hover:text-gray-900 flex items-center justify-end">
+                      View <ChevronRight className="w-3 h-3" />
+                    </a>
                   </div>
                 )
               })}

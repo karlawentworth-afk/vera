@@ -57,7 +57,13 @@ export function ReviewerLayout() {
           <Route index element={<ReviewerQueue />} />
           <Route path="review/:jobId" element={<ReviewerScoring />} />
           <Route path="jobs/:id" element={<ReviewerJobDetail />} />
-          <Route path="review" element={<ReviewerQueue />} />
+          <Route path="review" element={
+            <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+              <p className="text-lg font-light text-gray-900 mb-2">No active review</p>
+              <p className="text-sm text-gray-500 mb-4">Select a job from your queue to start reviewing and scoring.</p>
+              <a href="/reviewer" className="text-sm bg-gray-900 text-white rounded px-4 py-2 hover:bg-gray-800 inline-block">Go to My queue</a>
+            </div>
+          } />
           <Route path="completed" element={<ReviewerCompleted />} />
           <Route path="earnings" element={<ReviewerEarnings />} />
           <Route path="invoices" element={<ReviewerInvoices />} />
