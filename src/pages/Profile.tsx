@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import { RainbowStripe } from '../components/shared/RainbowStripe'
 import { Camera, Save, CheckCircle } from 'lucide-react'
+import { NotificationPreferences } from '../components/shared/NotificationPreferences'
 
 const TIMEZONES = ['Europe/London', 'Europe/Berlin', 'Europe/Paris', 'Europe/Madrid', 'Europe/Rome', 'Europe/Warsaw', 'Europe/Stockholm', 'America/New_York', 'America/Chicago', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Shanghai']
 const RAINBOW = ['#E5187A', '#8E2882', '#1B4F9E', '#1FA1D6', '#0F8F4D', '#F4D31E', '#EE7C24', '#D9211E']
@@ -215,6 +216,8 @@ export function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <NotificationPreferences />
     </div>
   )
 }
